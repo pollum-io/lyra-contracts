@@ -1,0 +1,31 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+    "@typechain/ethers-v5": "^10.2.1",
+    "@typechain/hardhat": "^6.1.6",
+    "chai": "^4.3.7",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.14.1",
+    "hardhat-deploy": "^0.11.33",
+    "hardhat-gas-reporter": "^1.0.9",
+    "prettier": "^2.8.8",
+    "prettier-plugin-solidity": "^1.1.3",
+    "solidity-coverage": "^0.8.2",
+    "typechain": "^8.2.0"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-vyper": "^3.0.3",
+    "@openzeppelin/contracts": "^4.9.1",
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "assert-strict": "0.0.2",
+    "dotenv": "^16.1.4"
+  }
+}

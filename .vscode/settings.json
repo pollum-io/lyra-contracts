@@ -1,0 +1,10 @@
+{
+  "solidity.defaultCompiler": "localNodeModule",
+  "solidity.compileUsingRemoteVersion": "v0.8.18+commit.87f61d96",
+  "editor.formatOnSave": true,
+  "solidity.formatter": "prettier", // This is the default so it might be missing.
+  "[solidity]": {
+    // "editor.defaultFormatter": "JuanBlanco.solidity"
+    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+  }
+}

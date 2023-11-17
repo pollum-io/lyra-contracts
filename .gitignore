@@ -1,0 +1,24 @@
+types/
+.idea/
+.env
+.DS_Store
+yarn.lock
+
+# Dependency directory
+node_modules
+package-json.lock
+
+# Generated files
+artifacts
+build
+dist
+coverage
+coverage.json
+coverageEnv
+allFiredEvents
+yarn-error.log
+.coverage_artifacts
+.coverage_contracts
+cache/
+.openzeppelin/
+deployments/
