@@ -25,6 +25,7 @@
     "@nomiclabs/hardhat-vyper": "^3.0.3",
     "@openzeppelin/contracts": "^4.9.1",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "@uniswap/v3-periphery": "^1.4.4",
     "assert-strict": "0.0.2",
     "dotenv": "^16.1.4"
   }
