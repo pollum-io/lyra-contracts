@@ -3,12 +3,8 @@ require("@openzeppelin/hardhat-upgrades")
 require("@nomiclabs/hardhat-vyper")
 require("@nomiclabs/hardhat-etherscan")
 require("hardhat-deploy")
+const { networks } = require("./networks")
 require("dotenv").config()
-
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-const DEPLOYER_KEY = process.env.DEPLOYER_KEY
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
-
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   vyper: {
@@ -24,19 +20,16 @@ module.exports = {
     },
   },
   networks: {
-    hardhat: {
-      chainId: 1337,
-    },
-    goerli: {
-      url: "https://eth-goerli.g.alchemy.com/v2/" + ALCHEMY_API_KEY,
-      chainId: 5,
-      accounts: [DEPLOYER_KEY],
-      confirmations: 2,
-    }
+    ...networks,
   },
   etherscan: {
     apiKey: {
-      goerli: ETHERSCAN_API_KEY,
+      mainnet: networks.ethereum.verifyApiKey,
+      avalanche: networks.avalanche.verifyApiKey,
+      polygon: networks.polygon.verifyApiKey,
+      sepolia: networks.ethereumSepolia.verifyApiKey,
+      polygonMumbai: networks.polygonMumbai.verifyApiKey,
+      avalancheFujiTestnet: networks.avalancheFuji.verifyApiKey,
     },
   },
   namedAccounts: {

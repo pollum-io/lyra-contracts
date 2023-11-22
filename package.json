@@ -22,11 +22,14 @@
     "typechain": "^8.2.0"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.8.0",
+    "@chainlink/functions-toolkit": "github:claudiovb/functions-toolkit#bcf5cf1db054e06b74b31bfc87cb842f7ca13b71",
     "@nomiclabs/hardhat-vyper": "^3.0.3",
     "@openzeppelin/contracts": "^4.9.1",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@uniswap/v3-periphery": "^1.4.4",
     "assert-strict": "0.0.2",
+    "child_process": "^1.0.2",
     "dotenv": "^16.1.4"
   }
 }
