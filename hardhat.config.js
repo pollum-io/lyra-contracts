@@ -13,13 +13,20 @@ const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
 	solidity: {
-		version: "0.8.18",
-		settings: {
-			optimizer: {
-				enabled: true,
-				runs: 1000,
+		compilers: [
+			{
+				version: "0.8.18",
+				settings: {
+					optimizer: {
+						enabled: true,
+						runs: 1000,
+					},
+				},
 			},
-		},
+			{
+				version: "0.4.22"
+			}
+		]
 	},
 	networks: {
 		hardhat: {

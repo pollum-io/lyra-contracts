@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-contract TSELIC29 {
+contract DREX {
 	string public name = "Real Digital X";
 	string public symbol = "DREX";
-	uint256 public totalSupply = 1000000e6; // 1 million tokens
+	uint256 public totalSupply = 1000000000e6; // 1 billion tokens
 	uint8 public decimals = 6;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
