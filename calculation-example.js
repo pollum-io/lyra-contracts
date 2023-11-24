@@ -10,7 +10,8 @@ const timeInYears = 1 / 12 // represents 1 month
 const eulersNumber = 2.7183
 
 // Continuously-compounding interest formula: A = Pe^(rt)
-const totalAmountAfterInterest = principalAmount * eulersNumber ** (APYAsDecimalPercentage * timeInYears)
+const totalAmountAfterInterest =
+	principalAmount * eulersNumber ** (APYAsDecimalPercentage * timeInYears)
 
 // The source code MUST return a Buffer or the request will return an error message
 // Use one of the following functions to convert to a Buffer representing the response bytes that are returned to the consumer smart contract:
