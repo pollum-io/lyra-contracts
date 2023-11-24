@@ -36,21 +36,15 @@ describe("rBRLLPool", function () {
 	let tokens
 	let mockMinter
 
-
 	beforeEach("load fixture", async () => {
-		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] =
-			await ethers.getSigners()
-			// deploy tokens
-			; ({ drexToken, tselicToken } = await deployTokensFixture(
-				deployer,
-				drexInvestor,
-				tselicInvestor
-			))
-			; ({ selicUniPool } = await deployUniPoolFixture(
-				deployer,
-				drexToken,
-				tselicToken,
-			))
+		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
+		// deploy tokens
+		;({ drexToken, tselicToken } = await deployTokensFixture(
+			deployer,
+			drexInvestor,
+			tselicInvestor
+		))
+		;({ selicUniPool } = await deployUniPoolFixture(deployer, drexToken, tselicToken))
 		// ; ({ priceFeed } = await deployMockPriceFeedFixture(deployer))
 		// ; ({ mockMinter } = await deployMockMinter(deployer, stbtToken, mxpRedeemPool))
 		// ; ({ rustpool } = await deployrUSTPoolFixture(admin, deployer, stbtToken, usdcToken))
