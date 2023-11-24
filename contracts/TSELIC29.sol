@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 contract TSELIC29 {
 	string public name = "TESOURO SELIC 2029";
 	string public symbol = "TSELIC29";
-	uint256 public totalSupply = 1000000e18; // 1 million tokens
+	uint256 public totalSupply = 1000000000e18; // 1 billion tokens
 	uint8 public decimals = 18;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);

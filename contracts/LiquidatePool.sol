@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 contract LiquidatePool is AccessControl {
 	using SafeERC20 for IERC20;
@@ -19,10 +18,10 @@ contract LiquidatePool is AccessControl {
 	address public admin;
 	// rbrllpool
 	address public rbrllpool;
-	// stbt address
-	IERC20 public stbt;
-	// usdc address
-	IERC20 public usdc;
+	// tselic address
+	IERC20 public tselic;
+	// drex address
+	IERC20 public drex;
 	// uniswap router
 	ISwapRouter swapRouter;
 
@@ -43,19 +42,19 @@ contract LiquidatePool is AccessControl {
 	constructor(
 		address _admin,
 		address _rbrllpool,
-		address _stbt,
-		address _usdc,
+		address _tselic,
+		address _drex,
 		ISwapRouter _swapRouter
 	) {
 		require(_admin != address(0), "!_admin");
 		require(_rbrllpool != address(0), "!_rbrllpool");
-		require(_stbt != address(0), "!_stbt");
-		require(_usdc != address(0), "!_usdc");
+		require(_tselic != address(0), "!_tselic");
+		require(_drex != address(0), "!_drex");
 
 		admin = _admin;
 		rbrllpool = _rbrllpool;
-		stbt = IERC20(_stbt);
-		usdc = IERC20(_usdc);
+		tselic = IERC20(_tselic);
+		drex = IERC20(_drex);
 		swapRouter = _swapRouter;
 
 		_setRoleAdmin(POOL_MANAGER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -97,28 +96,28 @@ contract LiquidatePool is AccessControl {
 	}
 
 	/**
-	 * @dev Transfer a give amout of stbt to matrixport's mint pool
-	 * @param stbtAmount the amout of stbt
+	 * @dev liquidate a give amout of tselic on UniswapV3
+	 * @param tselicAmount the amout of tselic
 	 * @param minReturn the minimum amount of return
 	 * @param receiver used to receive token
 	 */
 	function flashLiquidatetSELIC(
-		uint256 stbtAmount,
+		uint256 tselicAmount,
 		uint256 minReturn,
 		address receiver
 	) external {
 		require(msg.sender == rbrllpool, "unauthorized");
 
-		stbt.approve(address(swapRouter), stbtAmount);
+		tselic.approve(address(swapRouter), tselicAmount);
 
 		// We set the sqrtPriceLimitx96 to be 0 to ensure we swap our exact input amount.
 		ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-			tokenIn: address(stbt),
-			tokenOut: address(usdc),
+			tokenIn: address(tselic),
+			tokenOut: address(drex),
 			fee: 3000,
 			recipient: msg.sender,
 			deadline: block.timestamp,
-			amountIn: stbtAmount,
+			amountIn: tselicAmount,
 			amountOutMinimum: minReturn,
 			sqrtPriceLimitX96: 0
 		});
@@ -128,7 +127,7 @@ contract LiquidatePool is AccessControl {
 
 		uint256 feeAmount = amountOut.mul(liquidateFeeRate).div(FEE_COEFFICIENT);
 		uint256 amountAfterFee = amountOut.sub(feeAmount);
-		usdc.safeTransfer(receiver, amountAfterFee);
-		usdc.safeTransfer(feeCollector, feeAmount);
+		drex.safeTransfer(receiver, amountAfterFee);
+		drex.safeTransfer(feeCollector, feeAmount);
 	}
 }
