@@ -6,7 +6,13 @@ const { utils, Wallet } = require("ethers")
 require("dotenv").config()
 	// Loads environment variables from .env.enc file (if it exists)
 	; (async () => {
-		;[admin] = await ethers.getSigners()
+		// Connect to local Ethereum node
+		const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+
+		// Get the first account from the local node
+		const admin = provider.getSigner(0);
+		// ;[admilson] = await ethers.getSigners()
+		// console.log('check admilson', admilson);
 		const requestConfigPath = path.join(process.cwd(), "Functions-request-config.js") // @dev Update this to point to your desired request config file
 		console.log(`Using Functions request config file ${requestConfigPath}\n`)
 		console.log("Check admin", admin.address)
@@ -29,8 +35,8 @@ require("dotenv").config()
 		if (process.env["SECOND_PRIVATE_KEY"]) {
 			const secondAddressToFund = new Wallet(process.env["SECOND_PRIVATE_KEY"]).address
 			await localFunctionsTestnetInfo.getFunds(secondAddressToFund, {
-				weiAmount: utils.parseEther("100").toString(), // 100 ETH
-				juelsAmount: utils.parseEther("100").toString(), // 100 LINK
+				weiAmount: utils.parseEther("10000").toString(), // 100 ETH
+				juelsAmount: utils.parseEther("10000").toString(), // 100 LINK
 			})
 		}
 

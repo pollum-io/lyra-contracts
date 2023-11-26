@@ -3,6 +3,11 @@ require("@openzeppelin/hardhat-upgrades")
 require("@nomiclabs/hardhat-vyper")
 require("@nomiclabs/hardhat-etherscan")
 require("hardhat-deploy")
+require('./tasks/deployAutoConsumer');
+require('./tasks/setAutoRequest');
+require('./tasks/readConsumer');
+require('./tasks/checkUpkeep');
+require('./tasks/performUpkeep');
 const { networks } = require("./networks")
 require("dotenv").config()
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -32,6 +37,7 @@ module.exports = {
 			},
 		],
 	},
+	defaultNetwork: "localFunctionsTestnet",
 	networks: {
 		...networks,
 	},
