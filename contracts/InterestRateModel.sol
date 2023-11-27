@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.18;
+pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./AutomatedFunctionsConsumer.sol";
 
 /**
  * @title Interest rate model for Lyra Loans.
@@ -10,29 +11,44 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  *
  */
 contract InterestRateModel is AccessControl {
-	constructor() {
-		// _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+	AutomatedFunctionsConsumer public automatedFunctionsConsumer;
+	event SetAutomatedFunctionsConsumer(address indexed automatedFunctionsConsumer);
+
+	constructor(address _automatedFunctionsConsumer) {
+		_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+		automatedFunctionsConsumer = AutomatedFunctionsConsumer(_automatedFunctionsConsumer);
+		emit SetAutomatedFunctionsConsumer(_automatedFunctionsConsumer);
+	}
+
+	/**
+	 * @notice set new automatedFunctionsConsumer address
+	 */
+	function setAutomatedFunctionsConsumer(
+		address _automatedFunctionsConsumer
+	) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		automatedFunctionsConsumer = AutomatedFunctionsConsumer(_automatedFunctionsConsumer);
+		emit SetAutomatedFunctionsConsumer(_automatedFunctionsConsumer);
 	}
 
 	/**
 	 * @notice get APR from chainlink functions
 	 */
 	function getInterestRate() public view returns (uint256) {
-		return 0;
+		return automatedFunctionsConsumer.selicRate();
 	}
 
 	/**
 	 * @notice get unit value from chainlink functions
 	 */
 	function getUnitValue() external view returns (uint256) {
-		return 0;
+		return automatedFunctionsConsumer.unitValue();
 	}
 
 	/**
 	 * @notice get maturity date from chainlink functions
 	 */
 	function getMaturity() external view returns (uint256) {
-		return 0;
+		return automatedFunctionsConsumer.maturityTime();
 	}
 
 	/**
