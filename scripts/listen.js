@@ -1,4 +1,3 @@
-// Loads environment variables from .env.enc file (if it exists)
 require("dotenv").config()
 
 const { networks } = require("../networks")

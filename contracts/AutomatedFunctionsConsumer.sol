@@ -25,6 +25,9 @@ contract AutomatedFunctionsConsumer is
 	bytes32 public s_lastRequestId;
 	bytes public s_lastResponse;
 	bytes public s_lastError;
+	uint256 public selicRate;
+	uint256 public unitValue;
+	uint256 public maturityTime;
 
 	// State variables for Chainlink Automation
 	uint256 public s_updateInterval;
@@ -110,6 +113,8 @@ contract AutomatedFunctionsConsumer is
 		bytes memory err
 	) internal override {
 		s_lastResponse = response;
+		require(response.length == 96, "response length does not match 3 uint256s");
+		(selicRate, unitValue, maturityTime) = abi.decode(response, (uint256, uint256, uint256));
 		s_lastError = err;
 		s_responseCounter = s_responseCounter + 1;
 		emit OCRResponse(requestId, response, err);

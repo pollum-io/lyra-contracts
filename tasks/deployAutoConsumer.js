@@ -18,8 +18,6 @@ task("functions-deploy-auto-consumer", "Deploys the AutomatedFunctionsConsumer c
         }
         console.log("\n__Compiling Contracts__")
         await run("compile")
-        console.log('network', network);
-        console.log('networks[network.name]', networks[network.name]);
         const functionsRouterAddress = networks[network.name]["functionsRouter"]
         const donId = networks[network.name]["donId"]
         const donIdBytes32 = hre.ethers.utils.formatBytes32String(donId)

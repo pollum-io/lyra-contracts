@@ -8,6 +8,7 @@ require('./tasks/setAutoRequest');
 require('./tasks/readConsumer');
 require('./tasks/checkUpkeep');
 require('./tasks/performUpkeep');
+require('./tasks/subscriptionInfo');
 const { networks } = require("./networks")
 require("dotenv").config()
 /** @type import('hardhat/config').HardhatUserConfig */

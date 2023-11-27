@@ -4,18 +4,11 @@ const fs = require("fs")
 const { startLocalFunctionsTestnet } = require("@chainlink/functions-toolkit")
 const { utils, Wallet } = require("ethers")
 require("dotenv").config()
-	// Loads environment variables from .env.enc file (if it exists)
 	; (async () => {
-		// Connect to local Ethereum node
 		const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-
 		// Get the first account from the local node
 		const admin = provider.getSigner(0);
-		// ;[admilson] = await ethers.getSigners()
-		// console.log('check admilson', admilson);
 		const requestConfigPath = path.join(process.cwd(), "Functions-request-config.js") // @dev Update this to point to your desired request config file
-		console.log(`Using Functions request config file ${requestConfigPath}\n`)
-		console.log("Check admin", admin.address)
 		const localFunctionsTestnetInfo = await startLocalFunctionsTestnet(admin, requestConfigPath)
 
 		console.table({
@@ -26,19 +19,11 @@ require("dotenv").config()
 		})
 
 		// Fund wallets with ETH and LINK
-		console.log("chekc privateKey", process.env["PRIVATE_KEY"])
 		const addressToFund = new Wallet(process.env["PRIVATE_KEY"]).address
 		await localFunctionsTestnetInfo.getFunds(addressToFund, {
-			weiAmount: utils.parseEther("100").toString(), // 100 ETH
-			juelsAmount: utils.parseEther("100").toString(), // 100 LINK
+			weiAmount: utils.parseEther("10000").toString(), // 1000 ETH
+			juelsAmount: utils.parseEther("10000").toString(), // 1000 LINK
 		})
-		if (process.env["SECOND_PRIVATE_KEY"]) {
-			const secondAddressToFund = new Wallet(process.env["SECOND_PRIVATE_KEY"]).address
-			await localFunctionsTestnetInfo.getFunds(secondAddressToFund, {
-				weiAmount: utils.parseEther("10000").toString(), // 100 ETH
-				juelsAmount: utils.parseEther("10000").toString(), // 100 LINK
-			})
-		}
 
 		// Update values in networks.js
 		let networksConfig = fs.readFileSync(path.join(process.cwd(), "networks.js")).toString()
