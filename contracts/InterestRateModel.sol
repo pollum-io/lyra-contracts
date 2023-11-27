@@ -15,10 +15,23 @@ contract InterestRateModel is AccessControl {
 	}
 
 	/**
-	 * @notice get APR from chainlink functions?
-	 * TODO: implement function
+	 * @notice get APR from chainlink functions
 	 */
 	function getInterestRate() public view returns (uint256) {
+		return 0;
+	}
+
+	/**
+	 * @notice get unit value from chainlink functions
+	 */
+	function getUnitValue() external view returns (uint256) {
+		return 0;
+	}
+
+	/**
+	 * @notice get maturity date from chainlink functions
+	 */
+	function getMaturity() external view returns (uint256) {
 		return 0;
 	}
 
@@ -31,7 +44,7 @@ contract InterestRateModel is AccessControl {
 	function getSupplyInterestRate(
 		uint256 totalSupply,
 		uint256 totalBorrow
-	) public view returns (uint) {
+	) external view returns (uint) {
 		uint256 apr = getInterestRate();
 
 		if (totalBorrow == 0) {

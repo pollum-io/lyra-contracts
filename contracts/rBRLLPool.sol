@@ -531,12 +531,11 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	}
 
 	/**
-	 * @dev Return USD value of tSELIC
-	 * it should be equal to $1.
-	 * maybe possible through the oracle.
+	 * @dev Return brl value of tSELIC
+	 * it uses 18 decimal places for calculation propose.
 	 */
-	function _tselicPrice() internal pure returns (uint256) {
-		return 1e18;
+	function _tselicPrice() internal view returns (uint256) {
+		return interestRateModel.getUnitValue();
 	}
 
 	/**
@@ -558,6 +557,9 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @dev Secondly Rate
 	 */
 	function getSR() public view returns (uint256) {
+		if (block.timestamp > interestRateModel.getMaturity()) {
+			return 0;
+		}
 		uint256 _totalSupplyrBRLL = _getTotalSupplyrBRLL();
 		uint256 supplyInterestRate = interestRateModel.getSupplyInterestRate(
 			_totalSupplyrBRLL,
