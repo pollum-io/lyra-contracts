@@ -3,17 +3,27 @@ require("@openzeppelin/hardhat-upgrades")
 require("@nomiclabs/hardhat-vyper")
 require("@nomiclabs/hardhat-etherscan")
 require("hardhat-deploy")
+require("./tasks/deployAutoConsumer")
+require("./tasks/setAutoRequest")
+require("./tasks/readConsumer")
+require("./tasks/checkUpkeep")
+require("./tasks/performUpkeep")
+require("./tasks/subscriptionInfo")
+const { networks } = require("./networks")
 require("dotenv").config()
-
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-const DEPLOYER_KEY =
-	process.env.DEPLOYER_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001"
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
-
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
 	solidity: {
 		compilers: [
+			{
+				version: "0.8.19",
+				settings: {
+					optimizer: {
+						enabled: true,
+						runs: 1000,
+					},
+				},
+			},
 			{
 				version: "0.8.18",
 				settings: {
@@ -28,20 +38,18 @@ module.exports = {
 			},
 		],
 	},
+	defaultNetwork: "localFunctionsTestnet",
 	networks: {
-		hardhat: {
-			chainId: 1337,
-		},
-		sepolia: {
-			url: "https://eth-sepolia.g.alchemy.com/v2/" + ALCHEMY_API_KEY,
-			chainId: 11155111,
-			accounts: [DEPLOYER_KEY],
-			confirmations: 2,
-		},
+		...networks,
 	},
 	etherscan: {
 		apiKey: {
-			sepolia: ETHERSCAN_API_KEY,
+			mainnet: networks.ethereum.verifyApiKey,
+			avalanche: networks.avalanche.verifyApiKey,
+			polygon: networks.polygon.verifyApiKey,
+			sepolia: networks.ethereumSepolia.verifyApiKey,
+			polygonMumbai: networks.polygonMumbai.verifyApiKey,
+			avalancheFujiTestnet: networks.avalancheFuji.verifyApiKey,
 		},
 	},
 	namedAccounts: {
