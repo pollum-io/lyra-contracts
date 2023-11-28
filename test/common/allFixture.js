@@ -2,7 +2,11 @@ const { ethers } = require("hardhat")
 const bn = require("bignumber.js")
 const { Pool, Position, nearestUsableTick } = require("@uniswap/v3-sdk")
 const { Token } = require("@uniswap/sdk-core")
-const { startLocalFunctionsTestnet, SubscriptionManager, buildRequestCBOR, } = require("@chainlink/functions-toolkit")
+const {
+	startLocalFunctionsTestnet,
+	SubscriptionManager,
+	buildRequestCBOR,
+} = require("@chainlink/functions-toolkit")
 const FunctionsRouter = require("@chainlink/functions-toolkit/dist/v1_contract_sources/FunctionsRouter")
 const LINK_AMOUNT = "100"
 const process = require("process")
@@ -245,7 +249,7 @@ async function deployUniPoolFixture(deployer, tselicToken, drexToken) {
 async function deployLocalChainlinkFunctions(admin, deployer) {
 	const requestConfigPath = path.join(process.cwd(), "Functions-request-config.js") // @dev Update this to point to your desired request config file
 	const requestConfig = require(requestConfigPath)
-	let secretsLocation, encryptedSecretsReference;
+	let secretsLocation, encryptedSecretsReference
 	const localFunctionsTestnetInfo = await startLocalFunctionsTestnet(admin, requestConfigPath)
 	await localFunctionsTestnetInfo.getFunds(deployer.address, {
 		weiAmount: ethers.utils.parseEther("1").toString(), // 1000 ETH
@@ -274,7 +278,11 @@ async function deployLocalChainlinkFunctions(admin, deployer) {
 	const consumerAddress = autoConsumerContract.address
 	const allowlist = await functionsRouter.getAllowListId()
 	const txOptions = { confirmations: 1 }
-	const sm = new SubscriptionManager({ signer: admin, linkTokenAddress: functionsAddresses.linkToken, functionsRouterAddress: functionsAddresses.functionsRouter })
+	const sm = new SubscriptionManager({
+		signer: admin,
+		linkTokenAddress: functionsAddresses.linkToken,
+		functionsRouterAddress: functionsAddresses.functionsRouter,
+	})
 	await sm.initialize()
 	const subscriptionId = await sm.createSubscription({ consumerAddress, txOptions })
 

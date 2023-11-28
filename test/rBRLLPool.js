@@ -1,7 +1,7 @@
 const { time, loadFixture } = require("@nomicfoundation/hardhat-network-helpers")
 // const { ethers } = require("hardhat")
 const { expect } = require("chai")
-const { BigNumber } = ethers;
+const { BigNumber } = ethers
 
 const {
 	deployTokensFixture,
@@ -30,7 +30,7 @@ const mineBlockWithTimestamp = async (provider, timestamp) => {
 }
 // Function to wait for a certain amount of time
 function delay(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 describe("rBRLLPool", function () {
@@ -44,19 +44,21 @@ describe("rBRLLPool", function () {
 	beforeEach("load fixture", async () => {
 		const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		ethers.provider = provider
-			;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-			// deploy tokens
-			; ({ drexToken, tselicToken } = await deployTokensFixture(
-				deployer,
-				drexInvestor,
-				tselicInvestor
-			))
+		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
+		// deploy tokens
+		;({ drexToken, tselicToken } = await deployTokensFixture(
+			deployer,
+			drexInvestor,
+			tselicInvestor
+		))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
 		if (TEST_CHAINLINK) {
-			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(admin, deployer))
-		}
-		else {
-			; ({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
+			;({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
+				admin,
+				deployer
+			))
+		} else {
+			;({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
 		}
 
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
@@ -72,7 +74,7 @@ describe("rBRLLPool", function () {
 			const checkUpkeep = await autoConsumerContract.performUpkeep([])
 			await checkUpkeep.wait(1)
 			reqId = await autoConsumerContract.s_lastRequestId()
-			await delay(5000);
+			await delay(5000)
 		}
 		interestRateModel = await deployInterestRateModelFixture(deployer, autoConsumerContract)
 		await rbrllpool.connect(admin).initLiquidatePool(liquidatePool.address)
@@ -86,14 +88,14 @@ describe("rBRLLPool", function () {
 
 	describe("Chainlink Automation", function () {
 		it("Check automation run", async () => {
-			expectedSelicRate = 12250000;
-			expectedMaturityTime = 1867014000; //Timestamp to maturity of SELIC2029 t-bond
+			expectedSelicRate = 12250000
+			expectedMaturityTime = 1867014000 //Timestamp to maturity of SELIC2029 t-bond
 			const lastResponse = await autoConsumerContract.selicRate()
 			const unitValue = await autoConsumerContract.unitValue()
 			const maturityTime = await autoConsumerContract.maturityTime()
-			expect(lastResponse.toNumber()).to.be.equal(expectedSelicRate);
-			expect(BigNumber.isBigNumber(unitValue)).to.be.true;
-			expect(maturityTime).to.be.equal(expectedMaturityTime);
+			expect(lastResponse.toNumber()).to.be.equal(expectedSelicRate)
+			expect(BigNumber.isBigNumber(unitValue)).to.be.true
+			expect(maturityTime).to.be.equal(expectedMaturityTime)
 		})
 	})
 	// const amountToSupplyUSDC = ethers.utils.parseUnits("100", 6) // 100 USDC
@@ -111,7 +113,7 @@ describe("rBRLLPool", function () {
 
 			it("Should fail if supply zero Drex", async function () {
 				await expect(rbrllpool.connect(drexInvestor).supplyDREX(0)).to.be.revertedWith(
-					'Supply DREX should more then 0.'
+					"Supply DREX should more then 0."
 				)
 			})
 		})
@@ -130,7 +132,7 @@ describe("rBRLLPool", function () {
 
 			it("Should fail if supply zero STBT", async function () {
 				await expect(rbrllpool.connect(tselicInvestor).supplyTSELIC(0)).to.be.revertedWith(
-					'Supply TSELIC should more then 0.'
+					"Supply TSELIC should more then 0."
 				)
 			})
 		})
