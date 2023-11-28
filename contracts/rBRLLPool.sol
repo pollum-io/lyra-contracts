@@ -176,7 +176,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of DREX
 	 */
 	function supplyDREX(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Supply DREX should more then 0.");
+		require(_amount > 0, "Supply DREX should be more than 0.");
 		drex.transferFrom(msg.sender, address(this), _amount);
 
 		// convert to rBRLL.
@@ -194,7 +194,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of TSELIC.
 	 */
 	function supplyTSELIC(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Supply TSELIC should more then 0.");
+		require(_amount > 0, "Supply TSELIC should be more than 0.");
 		_supplyTSELICFor(_amount, msg.sender);
 	}
 
@@ -210,7 +210,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 		uint256 _amount,
 		address _receiver
 	) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Supply TSELIC should more then 0.");
+		require(_amount > 0, "Supply TSELIC should be more than 0.");
 		_supplyTSELICFor(_amount, _receiver);
 	}
 
@@ -230,7 +230,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of TSELIC.
 	 */
 	function withdrawTSELIC(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Withdraw TSELIC should more then 0.");
+		require(_amount > 0, "Withdraw TSELIC should be more than 0.");
 
 		totalDepositedTSELIC -= _amount;
 		depositedTSELIC[msg.sender] -= _amount;
@@ -248,7 +248,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 */
 	function withdrawAllTSELIC() external whenNotPaused realizeInterest {
 		uint256 withdrawShares = depositedTSELIC[msg.sender];
-		require(withdrawShares > 0, "Withdraw TSELIC should more then 0.");
+		require(withdrawShares > 0, "Withdraw TSELIC should be more than 0.");
 
 		totalDepositedTSELIC -= withdrawShares;
 		depositedTSELIC[msg.sender] = 0;
@@ -267,7 +267,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of DREX.
 	 */
 	function withdrawDREX(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Withdraw DREX should more then 0.");
+		require(_amount > 0, "Withdraw DREX should be more than 0.");
 
 		// convert to rBRLL.
 		uint256 convertTorBRLL = _amount.mul(10 ** 12);
@@ -286,7 +286,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 */
 	function withdrawAllDREX() external whenNotPaused realizeInterest {
 		uint256 _amount = balanceOf(msg.sender);
-		require(_amount > 0, "Withdraw DREX should more then 0.");
+		require(_amount > 0, "Withdraw DREX should be more than 0.");
 
 		// convert to DREX.
 		uint256 convertToDREX = _amount.div(10 ** 12);
@@ -307,7 +307,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of DREX.
 	 */
 	function borrowDREX(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Borrow DREX should more then 0.");
+		require(_amount > 0, "Borrow DREX should be more thea 0.");
 
 		// convert to rBRLL.
 		uint256 convertTorBRLL = _amount.mul(10 ** 12);
@@ -327,7 +327,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of DREX.
 	 */
 	function repayDREX(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Repay DREX should more then 0.");
+		require(_amount > 0, "Repay DREX should be more than 0.");
 
 		drex.transferFrom(msg.sender, address(this), _amount);
 		// convert to rBRLL.
@@ -345,7 +345,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 */
 	function repayAll() external whenNotPaused realizeInterest {
 		uint256 userBorrowShares = borrowedShares[msg.sender];
-		require(userBorrowShares > 0, "Repay DREX should more then 0.");
+		require(userBorrowShares > 0, "Repay DREX should be more than 0.");
 
 		uint256 repayrBRLL = getBorrowrBRLLAmountByShares(userBorrowShares);
 
@@ -472,7 +472,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 */
 	function _burnrBRLL(address _account, uint256 _amount) internal {
 		uint256 sharesAmount = getSharesByrBRLLAmount(_amount);
-		require(sharesAmount > 0, "shares should be more then 0.");
+		require(sharesAmount > 0, "shares should be more than 0.");
 		_burnShares(_account, sharesAmount);
 		totalSupplyrBRLL -= _amount;
 		emit Burn(msg.sender, _amount, block.timestamp);
@@ -495,7 +495,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 
 		totalBorrowrBRLL += _amount;
 
-		require(totalBorrowrBRLL <= totalSupplyrBRLL, "shold be less then supply of rBRLL.");
+		require(totalBorrowrBRLL <= totalSupplyrBRLL, "shold be less than supply of rBRLL.");
 
 		emit MintDebt(msg.sender, _amount, borrowShares, block.timestamp);
 	}
@@ -508,7 +508,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 */
 	function _burnrBRLLDebt(address _account, uint256 _amount) internal {
 		uint256 borrowShares = getBorrowSharesByrBRLLAmount(_amount);
-		require(borrowShares > 0, "shares should be more then 0.");
+		require(borrowShares > 0, "shares should be more than 0.");
 		borrowedShares[_account] -= borrowShares;
 		totalBorrowShares -= borrowShares;
 

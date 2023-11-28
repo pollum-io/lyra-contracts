@@ -44,21 +44,21 @@ describe("rBRLLPool", function () {
 	beforeEach("load fixture", async () => {
 		const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		ethers.provider = provider
-		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-		// deploy tokens
-		;({ drexToken, tselicToken } = await deployTokensFixture(
-			deployer,
-			drexInvestor,
-			tselicInvestor
-		))
+			;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
+			// deploy tokens
+			; ({ drexToken, tselicToken } = await deployTokensFixture(
+				deployer,
+				drexInvestor,
+				tselicInvestor
+			))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
 		if (TEST_CHAINLINK) {
-			;({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
+			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
 				admin,
 				deployer
 			))
 		} else {
-			;({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
+			; ({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
 		}
 
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
@@ -98,9 +98,6 @@ describe("rBRLLPool", function () {
 			expect(maturityTime).to.be.equal(expectedMaturityTime)
 		})
 	})
-	// const amountToSupplyUSDC = ethers.utils.parseUnits("100", 6) // 100 USDC
-	// const amountToSupplySTBT = ethers.utils.parseUnits("100", 18) // 100 STBT
-	// const amountToBorrowUSDC = ethers.utils.parseUnits("98", 6) // 98 USDC
 	describe("Supply", function () {
 		describe("Supply Drex", function () {
 			it("Should be able to supply", async function () {
@@ -113,11 +110,11 @@ describe("rBRLLPool", function () {
 
 			it("Should fail if supply zero Drex", async function () {
 				await expect(rbrllpool.connect(drexInvestor).supplyDREX(0)).to.be.revertedWith(
-					"Supply DREX should more then 0."
+					"Supply DREX should be more than 0."
 				)
 			})
 		})
-		describe("Supply STBT", function () {
+		describe("Supply TSELIC", function () {
 			it("Should be able to supply", async function () {
 				await tselicToken
 					.connect(tselicInvestor)
@@ -130,9 +127,9 @@ describe("rBRLLPool", function () {
 				)
 			})
 
-			it("Should fail if supply zero STBT", async function () {
+			it("Should fail if supply zero TSELIC", async function () {
 				await expect(rbrllpool.connect(tselicInvestor).supplyTSELIC(0)).to.be.revertedWith(
-					"Supply TSELIC should more then 0."
+					"Supply TSELIC should be more than 0."
 				)
 			})
 		})
