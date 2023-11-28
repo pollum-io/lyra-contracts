@@ -5,12 +5,12 @@
 // Runtime Environment's members available in the global scope.
 const { networks } = require("../networks")
 const hre = require("hardhat")
-const createBilling = require("./createBilling");
-const NEED_DEPLOY_BILLING = true;
-const INTERVAL = 5; //Value in seconds
+const createBilling = require("./createBilling")
+const NEED_DEPLOY_BILLING = true
+const INTERVAL = 5 //Value in seconds
 require("dotenv").config()
 async function main() {
-	const networkName = network.name;
+	const networkName = network.name
 	//Deploy Drex and TSelic contracts
 	const [admin] = await ethers.getSigners()
 	const feeCollector = admin.address //TODO @dev replace with your fee collector address

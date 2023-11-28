@@ -154,7 +154,7 @@ const networks = {
 		linkToken: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
 		functionsRouter: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
 		donId: "local-functions-testnet",
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 }
 
