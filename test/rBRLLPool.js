@@ -38,24 +38,24 @@ describe("rBRLLPool", function () {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-			// deploy tokens
-			; ({ drexToken, tselicToken } = await deployTokensFixture(
-				deployer,
-				drexInvestor,
-				tselicInvestor
-			))
-			; (swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken))
-			// ; ({ automatedFunctionsConsumer } = await deployMockPriceFeedFixture(deployer))
-			; (rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken))
-			; (liquidatePool = await deployLiquidatePoolFixture(
-				admin,
-				deployer,
-				rbrllpool,
-				tselicToken,
-				drexToken,
-				swapRouter,
-			))
-			; (interestRateModel = await deployInterestRateModelFixture(deployer, drexToken)) // TODO: change to automatedFunctionsConsumer address instead of drex token
+		// deploy tokens
+		;({ drexToken, tselicToken } = await deployTokensFixture(
+			deployer,
+			drexInvestor,
+			tselicInvestor
+		))
+		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
+		// ; ({ automatedFunctionsConsumer } = await deployMockPriceFeedFixture(deployer))
+		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
+		liquidatePool = await deployLiquidatePoolFixture(
+			admin,
+			deployer,
+			rbrllpool,
+			tselicToken,
+			drexToken,
+			swapRouter
+		)
+		interestRateModel = await deployInterestRateModelFixture(deployer, drexToken) // TODO: change to automatedFunctionsConsumer address instead of drex token
 
 		await rbrllpool.connect(admin).initLiquidatePool(liquidatePool.address)
 		await rbrllpool.connect(admin).setInterestRateModel(interestRateModel.address)
