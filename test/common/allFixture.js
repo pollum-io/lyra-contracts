@@ -81,6 +81,13 @@ async function deployTokensFixture(deployer, investor, investor2) {
 		.connect(deployer)
 		.transfer(investor2.address, ethers.utils.parseUnits("1000", 6))
 
+	await tselicToken
+		.connect(deployer)
+		.transfer(investor.address, ethers.utils.parseUnits("100", 18))
+	await tselicToken
+		.connect(deployer)
+		.transfer(investor2.address, ethers.utils.parseUnits("100", 18))
+
 	return { drexToken, tselicToken }
 }
 

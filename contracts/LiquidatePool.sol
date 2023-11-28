@@ -101,7 +101,7 @@ contract LiquidatePool is AccessControl {
 	 * @param minReturn the minimum amount of return
 	 * @param receiver used to receive token
 	 */
-	function flashLiquidatetSELIC(
+	function flashLiquidateTSELIC(
 		uint256 tselicAmount,
 		uint256 minReturn,
 		address receiver

@@ -22,16 +22,16 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	uint256 public constant APR_COEFFICIENT = 1e8;
 	// Used to calculate the fee base.
 	uint256 public constant FEE_COEFFICIENT = 1e8;
-	// Used to calculate shares of tSELIC deposited by users.
-	uint256 public totalDepositedtSELIC;
+	// Used to calculate shares of TSELIC deposited by users.
+	uint256 public totalDepositedTSELIC;
 	// Used to calculate total supply of rBRLL.
 	uint256 public totalSupplyrBRLL;
 
 	uint256 public safeCollateralRate = 101 * 1e18;
 	uint256 public reserveFactor;
 
-	// Used to record the user's tSELIC shares.
-	mapping(address => uint256) public depositedtSELIC;
+	// Used to record the user's TSELIC shares.
+	mapping(address => uint256) public depositedTSELIC;
 	// Used to record the user's loan shares of rBRLL.
 	mapping(address => uint256) borrowedShares;
 	uint256 public totalBorrowShares;
@@ -52,11 +52,11 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	// reserves will be claim with rBRLL.
 	uint256 public totalUnclaimReserves;
 
-	event SupplytSELIC(address indexed user, uint256 amount, uint256 timestamp);
+	event SupplyTSELIC(address indexed user, uint256 amount, uint256 timestamp);
 	event SupplyDREX(address indexed user, uint256 amount, uint256 timestamp);
 	event Mint(address indexed user, uint256 amount, uint256 timestamp);
 	event Burn(address indexed user, uint256 amount, uint256 timestamp);
-	event WithdrawtSELIC(address indexed user, uint256 amount, uint256 timestamp);
+	event WithdrawTSELIC(address indexed user, uint256 amount, uint256 timestamp);
 	event WithdrawDREX(address indexed user, uint256 amount, uint256 timestamp);
 	event BorrowDREX(address indexed user, uint256 amount, uint256 timestamp);
 	event RepayDREX(address indexed user, uint256 amount, uint256 timestamp);
@@ -188,75 +188,75 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	}
 
 	/**
-	 * @notice Supply tSELIC.
-	 * Emits a `SupplytSELIC` event.
+	 * @notice Supply TSELIC.
+	 * Emits a `SupplyTSELIC` event.
 	 *
-	 * @param _amount the amount of tSELIC.
+	 * @param _amount the amount of TSELIC.
 	 */
-	function supplytSELIC(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Supply tSELIC should more then 0.");
-		_supplytSELICFor(_amount, msg.sender);
+	function supplyTSELIC(uint256 _amount) external whenNotPaused realizeInterest {
+		require(_amount > 0, "Supply TSELIC should more then 0.");
+		_supplyTSELICFor(_amount, msg.sender);
 	}
 
 	/**
-	 * @notice Supply tSELIC for others.
-	 * Emits a `SupplytSELIC` event.
+	 * @notice Supply TSELIC for others.
+	 * Emits a `SupplyTSELIC` event.
 	 *
-	 * @param _amount the amount of tSELIC.
+	 * @param _amount the amount of TSELIC.
 	 * @param _receiver receiver
 	 */
 
-	function supplytSELICFor(
+	function supplyTSELICFor(
 		uint256 _amount,
 		address _receiver
 	) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Supply tSELIC should more then 0.");
-		_supplytSELICFor(_amount, _receiver);
+		require(_amount > 0, "Supply TSELIC should more then 0.");
+		_supplyTSELICFor(_amount, _receiver);
 	}
 
-	function _supplytSELICFor(uint256 _amount, address _receiver) internal {
+	function _supplyTSELICFor(uint256 _amount, address _receiver) internal {
 		tselic.transferFrom(msg.sender, address(this), _amount);
 
-		totalDepositedtSELIC += _amount;
-		depositedtSELIC[_receiver] += _amount;
+		totalDepositedTSELIC += _amount;
+		depositedTSELIC[_receiver] += _amount;
 
-		emit SupplytSELIC(_receiver, _amount, block.timestamp);
+		emit SupplyTSELIC(_receiver, _amount, block.timestamp);
 	}
 
 	/**
-	 * @notice Withdraw tSELIC to an address.
-	 * Emits a `WithdrawtSELIC` event.
+	 * @notice Withdraw TSELIC to an address.
+	 * Emits a `WithdrawTSELIC` event.
 	 *
-	 * @param _amount the amount of tSELIC.
+	 * @param _amount the amount of TSELIC.
 	 */
-	function withdrawtSELIC(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Withdraw tSELIC should more then 0.");
+	function withdrawTSELIC(uint256 _amount) external whenNotPaused realizeInterest {
+		require(_amount > 0, "Withdraw TSELIC should more then 0.");
 
-		totalDepositedtSELIC -= _amount;
-		depositedtSELIC[msg.sender] -= _amount;
+		totalDepositedTSELIC -= _amount;
+		depositedTSELIC[msg.sender] -= _amount;
 
 		_requireIsSafeCollateralRate(msg.sender);
 		tselic.transfer(msg.sender, _amount);
 
-		emit WithdrawtSELIC(msg.sender, _amount, block.timestamp);
+		emit WithdrawTSELIC(msg.sender, _amount, block.timestamp);
 	}
 
 	/**
-	 * @notice Withdraw all tSELIC to an address.
-	 * Emits a `WithdrawtSELIC` event.
+	 * @notice Withdraw all TSELIC to an address.
+	 * Emits a `WithdrawTSELIC` event.
 	 *
 	 */
-	function withdrawAlltSELIC() external whenNotPaused realizeInterest {
-		uint256 withdrawShares = depositedtSELIC[msg.sender];
-		require(withdrawShares > 0, "Withdraw tSELIC should more then 0.");
+	function withdrawAllTSELIC() external whenNotPaused realizeInterest {
+		uint256 withdrawShares = depositedTSELIC[msg.sender];
+		require(withdrawShares > 0, "Withdraw TSELIC should more then 0.");
 
-		totalDepositedtSELIC -= withdrawShares;
-		depositedtSELIC[msg.sender] = 0;
+		totalDepositedTSELIC -= withdrawShares;
+		depositedTSELIC[msg.sender] = 0;
 
 		_requireIsSafeCollateralRate(msg.sender);
 		tselic.transfer(msg.sender, withdrawShares);
 
-		emit WithdrawtSELIC(msg.sender, withdrawShares, block.timestamp);
+		emit WithdrawTSELIC(msg.sender, withdrawShares, block.timestamp);
 	}
 
 	/**
@@ -374,7 +374,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	) external whenNotPaused realizeInterest {
 		require(liquidateProvider[borrower], "borrower is not a provider.");
 		_liquidateProcedure(borrower, repayAmount);
-		liquidatePool.flashLiquidatetSELIC(repayAmount, minReturn, msg.sender);
+		liquidatePool.flashLiquidateTSELIC(repayAmount, minReturn, msg.sender);
 
 		emit LiquidationRecord(msg.sender, borrower, repayAmount, block.timestamp);
 	}
@@ -388,14 +388,14 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 		_burnrBRLLDebt(borrower, repayAmount);
 
 		// TODO verify the decimal places.
-		uint256 liquidatetSELIC = repayAmount.div(_tselicPrice());
+		uint256 liquidateTSELIC = repayAmount.div(_tselicPrice());
 
 		require(
-			depositedtSELIC[borrower] >= liquidatetSELIC,
+			depositedTSELIC[borrower] >= liquidateTSELIC,
 			"repayAmount should be less than borrower's deposit."
 		);
-		totalDepositedtSELIC -= liquidatetSELIC;
-		depositedtSELIC[borrower] -= liquidatetSELIC;
+		totalDepositedTSELIC -= liquidateTSELIC;
+		depositedTSELIC[borrower] -= liquidateTSELIC;
 
 		tselic.transfer(address(liquidatePool), repayAmount);
 	}
@@ -525,7 +525,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	}
 
 	/**
-	 * @dev Return brl value of tSELIC
+	 * @dev Return brl value of TSELIC
 	 * it uses 18 decimal places for calculation propose.
 	 */
 	function _tselicPrice() internal view returns (uint256) {
@@ -541,7 +541,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 			return;
 		}
 		require(
-			(depositedtSELIC[user].mul(_tselicPrice()).mul(100) / borrowedAmount) >=
+			(depositedTSELIC[user].mul(_tselicPrice()).mul(100) / borrowedAmount) >=
 				safeCollateralRate,
 			"Cannot be lower than the safeCollateralRate."
 		);
