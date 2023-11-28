@@ -257,19 +257,14 @@ async function deployrBRLLPoolFixture(admin, deployer, tselic, drex) {
 
 async function deployInterestRateModelFixture(deployer, automatedFunctionsConsumer) {
 	const InterestRateModel = await ethers.getContractFactory("InterestRateModel")
-	let interestRateModel = await InterestRateModel.connect(deployer).deploy(automatedFunctionsConsumer.address)
+	let interestRateModel = await InterestRateModel.connect(deployer).deploy(
+		automatedFunctionsConsumer.address
+	)
 	await interestRateModel.deployed()
 	return interestRateModel
 }
 
-async function deployLiquidatePoolFixture(
-	admin,
-	deployer,
-	rbrllpool,
-	tselic,
-	drex,
-	swapRouter,
-) {
+async function deployLiquidatePoolFixture(admin, deployer, rbrllpool, tselic, drex, swapRouter) {
 	const LiquidatePool = await ethers.getContractFactory("LiquidatePool")
 
 	let liquidatePool = await LiquidatePool.connect(deployer).deploy(
@@ -277,7 +272,7 @@ async function deployLiquidatePoolFixture(
 		rbrllpool.address,
 		tselic.address,
 		drex.address,
-		swapRouter.address,
+		swapRouter.address
 	)
 	await liquidatePool.deployed()
 	return liquidatePool
@@ -289,5 +284,5 @@ module.exports = {
 	// deployMockPriceFeedFixture,
 	deployrBRLLPoolFixture,
 	deployLiquidatePoolFixture,
-	deployInterestRateModelFixture
+	deployInterestRateModelFixture,
 }
