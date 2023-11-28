@@ -2,13 +2,13 @@ const { SubscriptionManager } = require("@chainlink/functions-toolkit")
 const FunctionsRouter = require("@chainlink/functions-toolkit/dist/v1_contract_sources/FunctionsRouter")
 const { networks } = require("../networks")
 const LINK_AMOUNT = "100"
-	; (async () => {
-		await createBilling()
-	})()
+;(async () => {
+	await createBilling()
+})()
 async function createBilling() {
-	let signer;
-	[signer] = await ethers.getSigners()
-	let networkName = network.name;
+	let signer
+	;[signer] = await ethers.getSigners()
+	let networkName = network.name
 	if (networkName === "hardhat") {
 		networkName = "localFunctionsTestnet"
 	}
@@ -44,7 +44,7 @@ async function createBilling() {
 	subInfo.balance = ethers.utils.formatEther(subInfo.balance) + " LINK"
 	subInfo.blockedBalance = ethers.utils.formatEther(subInfo.blockedBalance) + " LINK"
 
-	return subscriptionId;
+	return subscriptionId
 }
 
-module.exports = createBilling;
+module.exports = createBilling

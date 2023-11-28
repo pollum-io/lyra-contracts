@@ -4,9 +4,9 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat")
-const createBilling = require("./createBilling");
-const NEED_DEPLOY_BILLING = true;
-const INTERVAL = 5; //Value in seconds
+const createBilling = require("./createBilling")
+const NEED_DEPLOY_BILLING = true
+const INTERVAL = 5 //Value in seconds
 const UNI_SWAP_ROUTER = "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad" //Uniswap V3 router sepolia
 require("dotenv").config()
 async function main() {
@@ -22,27 +22,25 @@ async function main() {
 	await tselicToken.deployed()
 	if (NEED_DEPLOY_BILLING) {
 		// Run createBilling.js
-		subscriptionId = await createBilling();
+		subscriptionId = await createBilling()
 		console.log("Billing subscription created: ", subscriptionId)
 	}
 	//Deploy AutomatedFunctionsConsumer contract
-	const autoConsumerAddress = await hre.run('functions-deploy-auto-consumer', {
+	const autoConsumerAddress = await hre.run("functions-deploy-auto-consumer", {
 		subid: subscriptionId.toString(),
 		verify: true,
-
-	});
+	})
 	//Set automation request for auto-consumer contract
-	await hre.run('functions-set-auto-request', {
+	await hre.run("functions-set-auto-request", {
 		contract: autoConsumerAddress,
 		subid: subscriptionId,
 		interval: INTERVAL,
 		simulate: false,
-	});
+	})
 
 	//Deploy rBRLLPool contract
 	const rBRLLPool = await ethers.getContractFactory("rBRLLPool")
-	let rbrllpool = await rBRLLPool
-		.deploy(admin.address, tselicToken.address, drexToken.address)
+	let rbrllpool = await rBRLLPool.deploy(admin.address, tselicToken.address, drexToken.address)
 	await rbrllpool.deployed()
 	console.log("rBRLLPool address:", rbrllpool.address)
 	//Grant roles to rBRLLPool contract
@@ -58,23 +56,19 @@ async function main() {
 		tselicToken.address,
 		drexToken.address,
 		UNI_SWAP_ROUTER
-
 	)
 	await liquidatePool.deployed()
 	console.log("LiquidatePool address:", liquidatePool.address)
 
 	//Deploy Interest Rate contract
 	const InterestRateModel = await ethers.getContractFactory("InterestRateModel")
-	let interestRateModel = await InterestRateModel.deploy(
-		autoConsumerAddress
-	)
+	let interestRateModel = await InterestRateModel.deploy(autoConsumerAddress)
 	await interestRateModel.deployed()
 	console.log("InterestRateModel address:", interestRateModel.address)
 
 	await rbrllpool.initLiquidatePool(liquidatePool.address)
 	await rbrllpool.setInterestRateModel(interestRateModel.address)
 	await liquidatePool.setFeeCollector(feeCollector)
-
 }
 
 // We recommend this pattern to be able to use async/await everywhere
