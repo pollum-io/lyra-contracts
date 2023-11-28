@@ -3,13 +3,14 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
+const { networks } = require("../networks")
 const hre = require("hardhat")
 const createBilling = require("./createBilling");
 const NEED_DEPLOY_BILLING = true;
 const INTERVAL = 5; //Value in seconds
-const UNI_SWAP_ROUTER = "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad" //Uniswap V3 router sepolia
 require("dotenv").config()
 async function main() {
+	const networkName = network.name;
 	//Deploy Drex and TSelic contracts
 	const [admin] = await ethers.getSigners()
 	const feeCollector = admin.address //TODO @dev replace with your fee collector address
@@ -57,7 +58,7 @@ async function main() {
 		rbrllpool.address,
 		tselicToken.address,
 		drexToken.address,
-		UNI_SWAP_ROUTER
+		networks[networkName]["uniswapV3Router"]
 
 	)
 	await liquidatePool.deployed()

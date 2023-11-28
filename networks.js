@@ -48,6 +48,7 @@ const networks = {
 			"https://01.functions-gateway.chain.link/",
 			"https://02.functions-gateway.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	avalanche: {
 		url: process.env.AVALANCHE_RPC_URL || "UNSET",
@@ -66,6 +67,7 @@ const networks = {
 			"https://01.functions-gateway.chain.link/",
 			"https://02.functions-gateway.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	polygon: {
 		url: process.env.POLYGON_RPC_URL || "UNSET",
@@ -84,6 +86,7 @@ const networks = {
 			"https://01.functions-gateway.chain.link/",
 			"https://02.functions-gateway.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	ethereumSepolia: {
 		url: process.env.ETHEREUM_SEPOLIA_RPC_URL || "UNSET",
@@ -102,6 +105,7 @@ const networks = {
 			"https://01.functions-gateway.testnet.chain.link/",
 			"https://02.functions-gateway.testnet.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	polygonMumbai: {
 		url: process.env.POLYGON_MUMBAI_RPC_URL || "UNSET",
@@ -120,6 +124,7 @@ const networks = {
 			"https://01.functions-gateway.testnet.chain.link/",
 			"https://02.functions-gateway.testnet.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	avalancheFuji: {
 		url: process.env.AVALANCHE_FUJI_RPC_URL || "UNSET",
@@ -138,6 +143,7 @@ const networks = {
 			"https://01.functions-gateway.testnet.chain.link/",
 			"https://02.functions-gateway.testnet.chain.link/",
 		],
+		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 	// localFunctionsTestnet is updated dynamically by scripts/startLocalFunctionsTestnet.js so it should not be modified here
 	localFunctionsTestnet: {
@@ -145,9 +151,10 @@ const networks = {
             accounts,
             confirmations: 1,
             nativeCurrencySymbol: "ETH",
-            linkToken: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-            functionsRouter: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+            linkToken: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+            functionsRouter: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
             donId: "local-functions-testnet",
+			uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564"
           },
 }
 
