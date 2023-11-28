@@ -75,7 +75,6 @@ describe("rBRLLPool", function () {
 				expect(await rbrllpool.balanceOf(drexInvestor.address)).to.be.equal(
 					ethers.utils.parseUnits("100", 18)
 				)
-
 			})
 
 			it("Should fail if supply zero Drex", async function () {
@@ -86,7 +85,9 @@ describe("rBRLLPool", function () {
 		})
 		describe("Supply STBT", function () {
 			it("Should be able to supply", async function () {
-				await tselicToken.connect(tselicInvestor).approve(rbrllpool.address, amountToSupplyTSelic)
+				await tselicToken
+					.connect(tselicInvestor)
+					.approve(rbrllpool.address, amountToSupplyTSelic)
 
 				await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
 
