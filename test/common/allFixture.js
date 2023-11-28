@@ -78,7 +78,7 @@ async function deployTokensFixture(deployer, investor, investor2) {
 	return { drexToken, tselicToken }
 }
 
-async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
+async function deployUniPoolFixture(deployer, tselicToken, drexToken) {
 	Weth = await ethers.getContractFactory("WETH9")
 	weth = await Weth.deploy()
 	await weth.deployed()
@@ -226,8 +226,7 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 		.connect(deployer)
 		.mint(params, { gasLimit: "1000000" })
 	await tx.wait()
-
-	return { poolContract }
+	return swapRouter
 }
 
 // async function deployMockPriceFeedFixture(deployer) {
@@ -237,67 +236,51 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 // 	return { priceFeed }
 // }
 
-// async function deployrUSTPoolFixture(admin, deployer, stbt, usdc) {
-// 	const rUSTPool = await ethers.getContractFactory("rUSTPool")
-// 	let rustpool = await rUSTPool
-// 		.connect(deployer)
-// 		.deploy(admin.address, stbt.address, usdc.address)
-// 	await rustpool.deployed()
-// 	// SET ROLE
-// 	let POOL_MANAGER_ROLE = await rustpool.POOL_MANAGER_ROLE()
-// 	await rustpool.connect(admin).grantRole(POOL_MANAGER_ROLE, admin.address)
-// 	return { rustpool }
-// }
+async function deployrBRLLPoolFixture(admin, deployer, tselic, drex) {
+	const rBRLLPool = await ethers.getContractFactory("rBRLLPool")
+	let rbrllpool = await rBRLLPool
+		.connect(deployer)
+		.deploy(admin.address, tselic.address, drex.address)
+	await rbrllpool.deployed()
+	// SET ROLE
+	let POOL_MANAGER_ROLE = await rbrllpool.POOL_MANAGER_ROLE()
+	await rbrllpool.connect(admin).grantRole(POOL_MANAGER_ROLE, admin.address)
+	return rbrllpool
+}
 
-// async function deploywSTBTPoolFixture(admin, deployer, wstbt, usdc) {
-// 	const wSTBTPool = await ethers.getContractFactory("wSTBTPool")
-// 	let wstbtPool = await wSTBTPool
-// 		.connect(deployer)
-// 		.deploy(admin.address, wstbt.address, usdc.address)
-// 	await wstbtPool.deployed()
-// 	// SET ROLE
-// 	let POOL_MANAGER_ROLE = await wstbtPool.POOL_MANAGER_ROLE()
-// 	await wstbtPool.connect(admin).grantRole(POOL_MANAGER_ROLE, admin.address)
-// 	return { wstbtPool }
-// }
+async function deployInterestRateModelFixture(deployer, automatedFunctionsConsumer) {
+	const InterestRateModel = await ethers.getContractFactory("InterestRateModel")
+	let interestRateModel = await InterestRateModel.connect(deployer).deploy(automatedFunctionsConsumer.address)
+	await interestRateModel.deployed()
+	return interestRateModel
+}
 
-// async function deployInterestRateModelFixture(deployer) {
-// 	const InterestRateModel = await ethers.getContractFactory("InterestRateModel")
-// 	let interestRateModel = await InterestRateModel.connect(deployer).deploy()
-// 	await interestRateModel.deployed()
-// 	return { interestRateModel }
-// }
+async function deployLiquidatePoolFixture(
+	admin,
+	deployer,
+	rbrllpool,
+	tselic,
+	drex,
+	swapRouter,
+) {
+	const LiquidatePool = await ethers.getContractFactory("LiquidatePool")
 
-// async function deployLiquidatePoolFixture(
-// 	admin,
-// 	deployer,
-// 	rustpool,
-// 	mxpRedeemPool,
-// 	stbt,
-// 	usdc,
-// 	priceFeed,
-// 	coins
-// ) {
-// 	const LiquidatePool = await ethers.getContractFactory("LiquidatePool")
-// 	let liquidatePool = await LiquidatePool.connect(deployer).deploy(
-// 		admin.address,
-// 		rustpool.address,
-// 		mxpRedeemPool.address,
-// 		stbt.address,
-// 		usdc.address,
-// 		priceFeed.address,
-// 		coins
-// 	)
-// 	await liquidatePool.deployed()
-// 	return { liquidatePool }
-// }
+	let liquidatePool = await LiquidatePool.connect(deployer).deploy(
+		admin.address,
+		rbrllpool.address,
+		tselic.address,
+		drex.address,
+		swapRouter.address,
+	)
+	await liquidatePool.deployed()
+	return liquidatePool
+}
 
 module.exports = {
 	deployTokensFixture,
 	deployUniPoolFixture,
 	// deployMockPriceFeedFixture,
-	// deployrUSTPoolFixture,
-	// deployLiquidatePoolFixture,
-	// deployInterestRateModelFixture,
-	// deploywSTBTPoolFixture,
+	deployrBRLLPoolFixture,
+	deployLiquidatePoolFixture,
+	deployInterestRateModelFixture
 }

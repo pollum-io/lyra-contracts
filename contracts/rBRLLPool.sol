@@ -155,12 +155,6 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	function setInterestRateModel(
 		IInterestRateModel _interestRateModel
 	) external onlyRole(POOL_MANAGER_ROLE) realizeInterest {
-		// // To ensure 100% utilization.
-		// uint256 supplyInterestRate = _interestRateModel.getSupplyInterestRate(
-		// 	totalSupplyrBRLL,
-		// 	totalSupplyrBRLL
-		// );
-
 		interestRateModel = _interestRateModel;
 	}
 

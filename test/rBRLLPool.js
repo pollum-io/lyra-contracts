@@ -6,11 +6,11 @@ const {
 	deployTokensFixture,
 	deployUniPoolFixture,
 	// deployMockPriceFeedFixture,
-	// deployrUSTPoolFixture,
-	// deployLiquidatePoolFixture,
-	// deployInterestRateModelFixture,
+	deployrBRLLPoolFixture,
+	deployLiquidatePoolFixture,
+	deployInterestRateModelFixture,
 	// deploySTBTTokensFixture,
-	// deployMockMinter,
+	// ,
 } = require("./common/allFixture")
 
 const ONE_HOUR = 3600
@@ -29,56 +29,40 @@ const mineBlockWithTimestamp = async (provider, timestamp) => {
 describe("rBRLLPool", function () {
 	let admin, deployer, drexInvestor, tselicInvestor, feeCollector
 	let drexToken, tselicToken
-	let selicUniPool
-	let priceFeed, interestRateModel
-	let rustpool, liquidatePool
+	let swapRouter
+	let automatedFunctionsConsumer, interestRateModel
+	let rbrllpool, liquidatePool
 	let now
-	let tokens
-	let mockMinter
 
 	beforeEach("load fixture", async () => {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-		// deploy tokens
-		;({ drexToken, tselicToken } = await deployTokensFixture(
-			deployer,
-			drexInvestor,
-			tselicInvestor
-		))
-		;({ selicUniPool } = await deployUniPoolFixture(deployer, drexToken, tselicToken))
-		// ; ({ priceFeed } = await deployMockPriceFeedFixture(deployer))
-		// ; ({ mockMinter } = await deployMockMinter(deployer, stbtToken, mxpRedeemPool))
-		// ; ({ rustpool } = await deployrUSTPoolFixture(admin, deployer, stbtToken, usdcToken))
-		// ; ({ liquidatePool } = await deployLiquidatePoolFixture(
-		// 	admin,
-		// 	deployer,
-		// 	rustpool,
-		// 	mxpRedeemPool,
-		// 	stbtToken,
-		// 	usdcToken,
-		// 	priceFeed,
-		// 	[daiToken.address, usdcToken.address, usdtToken.address]
-		// ))
-		// ; ({ interestRateModel } = await deployInterestRateModelFixture(deployer))
+			// deploy tokens
+			; ({ drexToken, tselicToken } = await deployTokensFixture(
+				deployer,
+				drexInvestor,
+				tselicInvestor
+			))
+			; (swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken))
+			// ; ({ automatedFunctionsConsumer } = await deployMockPriceFeedFixture(deployer))
+			; (rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken))
+			; (liquidatePool = await deployLiquidatePoolFixture(
+				admin,
+				deployer,
+				rbrllpool,
+				tselicToken,
+				drexToken,
+				swapRouter,
+			))
+			; (interestRateModel = await deployInterestRateModelFixture(deployer, drexToken)) // TODO: change to automatedFunctionsConsumer address instead of drex token
 
-		// await liquidatePool.connect(admin).setCurvePool(stbtSwapPool.address)
-		// await liquidatePool.connect(admin).setRedeemPool(mxpRedeemPool.address)
-		// await liquidatePool.connect(admin).setSTBTMinter(mockMinter.address)
-		// // must be less than 1.005 USD
-		// await liquidatePool.connect(admin).setPegPrice(99500000, 100500000)
-		// await rustpool.connect(admin).initLiquidatePool(liquidatePool.address)
-		// await rustpool.connect(admin).setInterestRateModel(interestRateModel.address)
+		await rbrllpool.connect(admin).initLiquidatePool(liquidatePool.address)
+		await rbrllpool.connect(admin).setInterestRateModel(interestRateModel.address)
 
-		// await stbtToken.connect(deployer).setPermission(mxpRedeemPool.address, permission)
-		// await stbtToken.connect(deployer).setPermission(liquidatePool.address, permission)
-		// await stbtToken.connect(deployer).setPermission(rustpool.address, permission)
+		await liquidatePool.connect(admin).setFeeCollector(feeCollector.address)
 
-		// await liquidatePool.connect(admin).setFeeCollector(feeCollector.address)
-
-		// now = (await ethers.provider.getBlock("latest")).timestamp
-
-		// tokens = [daiToken, usdcToken, usdtToken]
+		now = (await ethers.provider.getBlock("latest")).timestamp
 	})
 	// const amountToSupplyUSDC = ethers.utils.parseUnits("100", 6) // 100 USDC
 	// const amountToSupplySTBT = ethers.utils.parseUnits("100", 18) // 100 STBT
