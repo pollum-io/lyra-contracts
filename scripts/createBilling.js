@@ -2,23 +2,26 @@ const { SubscriptionManager } = require("@chainlink/functions-toolkit")
 const FunctionsRouter = require("@chainlink/functions-toolkit/dist/v1_contract_sources/FunctionsRouter")
 const { networks } = require("../networks")
 const LINK_AMOUNT = "100"
-;(async () => {
-	;[signer] = await ethers.getSigners()
-	if (network.name === "hardhat") {
-		network.name = "localFunctionsTestnet"
+	; (async () => {
+		await createBilling()
+	})()
+async function createBilling() {
+	let signer;
+	[signer] = await ethers.getSigners()
+	let networkName = network.name;
+	if (networkName === "hardhat") {
+		networkName = "localFunctionsTestnet"
 	}
-	const functionsRouterAddress = networks[network.name]["functionsRouter"]
-	const linkTokenAddress = networks[network.name]["linkToken"]
+	const functionsRouterAddress = networks[networkName]["functionsRouter"]
+	const linkTokenAddress = networks[networkName]["linkToken"]
 	const myContract = new ethers.Contract(
 		functionsRouterAddress,
 		FunctionsRouter.FunctionsRouterSource.abi,
 		signer
 	)
-	console.log("check myContract", myContract)
 	const allowlist = await myContract.getAllowListId()
-	console.log("check allowlist", allowlist)
 	const linkAmount = LINK_AMOUNT
-	const confirmations = linkAmount > 0 ? networks[network.name].confirmations : 1
+	const confirmations = linkAmount > 0 ? networks[networkName].confirmations : 1
 	const consumerAddress = null
 	const txOptions = { confirmations }
 
@@ -41,5 +44,7 @@ const LINK_AMOUNT = "100"
 	subInfo.balance = ethers.utils.formatEther(subInfo.balance) + " LINK"
 	subInfo.blockedBalance = ethers.utils.formatEther(subInfo.blockedBalance) + " LINK"
 
-	console.log("\nSubscription Info: ", subInfo)
-})()
+	return subscriptionId;
+}
+
+module.exports = createBilling;

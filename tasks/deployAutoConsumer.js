@@ -95,4 +95,5 @@ task("functions-deploy-auto-consumer", "Deploys the AutomatedFunctionsConsumer c
 		console.log(
 			`\nAutomatedFunctionsConsumer contract deployed to ${consumerAddress} on ${network.name}`
 		)
+		return consumerAddress
 	})

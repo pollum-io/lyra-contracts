@@ -42,9 +42,9 @@ describe("rBRLLPool", function () {
 	let now
 
 	beforeEach("load fixture", async () => {
-		const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
-		ethers.provider = provider
-			;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
+		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
+		// ethers.provider = provider
+		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
 			// deploy tokens
 			; ({ drexToken, tselicToken } = await deployTokensFixture(
 				deployer,
