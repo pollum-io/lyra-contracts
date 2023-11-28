@@ -1,5 +1,5 @@
 const { time, loadFixture } = require("@nomicfoundation/hardhat-network-helpers")
-const { ethers } = require("hardhat")
+// const { ethers } = require("hardhat")
 const { expect } = require("chai")
 
 const {
@@ -37,14 +37,16 @@ describe("rBRLLPool", function () {
 	let mockMinter
 
 	beforeEach("load fixture", async () => {
+		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
+		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-		// deploy tokens
-		;({ drexToken, tselicToken } = await deployTokensFixture(
-			deployer,
-			drexInvestor,
-			tselicInvestor
-		))
-		;({ selicUniPool } = await deployUniPoolFixture(deployer, drexToken, tselicToken))
+			// deploy tokens
+			; ({ drexToken, tselicToken } = await deployTokensFixture(
+				deployer,
+				drexInvestor,
+				tselicInvestor
+			))
+			; ({ selicUniPool } = await deployUniPoolFixture(deployer, drexToken, tselicToken))
 		// ; ({ priceFeed } = await deployMockPriceFeedFixture(deployer))
 		// ; ({ mockMinter } = await deployMockMinter(deployer, stbtToken, mxpRedeemPool))
 		// ; ({ rustpool } = await deployrUSTPoolFixture(admin, deployer, stbtToken, usdcToken))
@@ -92,12 +94,12 @@ describe("rBRLLPool", function () {
 				expect(true)
 			})
 
-			// it("Should fail if supply zero USDC", async function () {
-			// 	// await expect(rustpool.connect(usdcInvestor).supplyUSDC(0)).to.be.revertedWith(
-			// 	// 	"Supply USDC should more then 0."
-			// 	// )
-			// 	expect(true)
-			// })
+			it("Should fail if supply zero USDC", async function () {
+				// await expect(rustpool.connect(usdcInvestor).supplyUSDC(0)).to.be.revertedWith(
+				// 	"Supply USDC should more then 0."
+				// )
+				expect(true)
+			})
 		})
 		// describe("Supply STBT", function () {
 		// 	it("Should be able to supply", async function () {

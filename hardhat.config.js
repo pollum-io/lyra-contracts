@@ -38,7 +38,7 @@ module.exports = {
 			},
 		],
 	},
-	defaultNetwork: "localFunctionsTestnet",
+	// defaultNetwork: "localFunctionsTestnet",
 	networks: {
 		...networks,
 	},

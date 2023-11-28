@@ -137,7 +137,6 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 		nativeCurrencyLabelBytes
 	)
 	await nonfungibleTokenPositionDescriptor.deployed()
-
 	const NonfungiblePositionManager = new ethers.ContractFactory(
 		artifacts.NonfungiblePositionManager.abi,
 		artifacts.NonfungiblePositionManager.bytecode,
@@ -149,28 +148,30 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 		nonfungibleTokenPositionDescriptor.address
 	)
 	await nonfungiblePositionManager.deployed()
-
+	endereco1 = drexToken.address
+	endereco2 = tselicToken.address
+	if (tselicToken.address > drexToken.address) {
+		endereco1 = tselicToken.address
+		endereco2 = drexToken.address
+	}
 	await nonfungiblePositionManager
 		.connect(deployer)
 		.createAndInitializePoolIfNecessary(
-			tselicToken.address,
-			drexToken.address,
+			endereco2,
+			endereco1,
 			3000,
 			encodePriceSqrt(13991000000, 1000000000000000000),
 			{ gasLimit: 5000000 }
 		)
-
 	const poolAddress = await uniFactory
 		.connect(deployer)
 		.getPool(tselicToken.address, drexToken.address, 3000)
-
 	tselicToken
 		.connect(deployer)
 		.approve(nonfungiblePositionManager.address, ethers.utils.parseUnits("1000000", 18))
 	drexToken
 		.connect(deployer)
 		.approve(nonfungiblePositionManager.address, ethers.utils.parseUnits("1000000", 6))
-
 	const poolContract = new ethers.Contract(
 		poolAddress,
 		artifacts.UniswapV3Pool.abi,
@@ -180,7 +181,6 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 
 	const TselicToken = new Token(1337, tselicToken.address, 18, "TSELIC29", "TESOURO SELIC 2029")
 	const DrexToken = new Token(1337, drexToken.address, 6, "DREX", "Real Digital X")
-
 	const pool = new Pool(
 		TselicToken,
 		DrexToken,
@@ -189,7 +189,6 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 		poolData.liquidity.toString(),
 		poolData.tick
 	)
-
 	const position = new Position({
 		pool: pool,
 		liquidity: ethers.utils.parseEther("1"),
@@ -198,10 +197,19 @@ async function deployUniPoolFixture(deployer, drexToken, tselicToken) {
 		tickUpper:
 			nearestUsableTick(poolData.tick, poolData.tickSpacing) + poolData.tickSpacing * 2,
 	})
-	const { amount0: amount0Desired, amount1: amount1Desired } = position.mintAmounts
+	let { amount0: amount0Desired, amount1: amount1Desired } = position.mintAmounts
+	token1addr = drexToken.address
+	token0addr = tselicToken.address
+	if (tselicToken.address > drexToken.address) {
+		amount0Desired = amount1Desired
+		amount1Desired = amount0Desired
+		token1addr = tselicToken.address
+		token0addr = drexToken.address
+	}
+
 	params = {
-		token0: tselicToken.address,
-		token1: drexToken.address,
+		token0: token0addr,
+		token1: token1addr,
 		fee: poolData.fee,
 		tickLower:
 			nearestUsableTick(poolData.tick, poolData.tickSpacing) - poolData.tickSpacing * 2,
