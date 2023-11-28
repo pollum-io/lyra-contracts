@@ -5,7 +5,7 @@ const { expect } = require("chai")
 const {
 	deployTokensFixture,
 	deployUniPoolFixture,
-	// deployMockPriceFeedFixture,
+	deployLocalChainlinkFunctions,
 	deployrBRLLPoolFixture,
 	deployLiquidatePoolFixture,
 	deployInterestRateModelFixture,
@@ -30,7 +30,7 @@ describe("rBRLLPool", function () {
 	let admin, deployer, drexInvestor, tselicInvestor, feeCollector
 	let drexToken, tselicToken
 	let swapRouter
-	let automatedFunctionsConsumer, interestRateModel
+	let autoConsumerContract, functionsAddresses, interestRateModel, reqId
 	let rbrllpool, liquidatePool
 	let now
 
@@ -38,14 +38,14 @@ describe("rBRLLPool", function () {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-		// deploy tokens
-		;({ drexToken, tselicToken } = await deployTokensFixture(
-			deployer,
-			drexInvestor,
-			tselicInvestor
-		))
+			// deploy tokens
+			; ({ drexToken, tselicToken } = await deployTokensFixture(
+				deployer,
+				drexInvestor,
+				tselicInvestor
+			))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
-		// ; ({ automatedFunctionsConsumer } = await deployMockPriceFeedFixture(deployer))
+			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(admin, deployer))
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
 		liquidatePool = await deployLiquidatePoolFixture(
 			admin,
@@ -55,6 +55,10 @@ describe("rBRLLPool", function () {
 			drexToken,
 			swapRouter
 		)
+
+		const checkUpkeep = await autoConsumerContract.performUpkeep([])
+		await checkUpkeep.wait(1)
+		reqId = await autoConsumerContract.s_lastRequestId()
 		interestRateModel = await deployInterestRateModelFixture(deployer, drexToken) // TODO: change to automatedFunctionsConsumer address instead of drex token
 
 		await rbrllpool.connect(admin).initLiquidatePool(liquidatePool.address)

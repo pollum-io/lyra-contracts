@@ -2,6 +2,12 @@ const { ethers } = require("hardhat")
 const bn = require("bignumber.js")
 const { Pool, Position, nearestUsableTick } = require("@uniswap/v3-sdk")
 const { Token } = require("@uniswap/sdk-core")
+const { startLocalFunctionsTestnet, SubscriptionManager, buildRequestCBOR, } = require("@chainlink/functions-toolkit")
+const FunctionsRouter = require("@chainlink/functions-toolkit/dist/v1_contract_sources/FunctionsRouter")
+const LINK_AMOUNT = "100"
+const process = require("process")
+const path = require("path")
+const fs = require("fs")
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 const artifacts = {
 	UniswapV3Factory: require("@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json"),
@@ -229,12 +235,67 @@ async function deployUniPoolFixture(deployer, tselicToken, drexToken) {
 	return swapRouter
 }
 
-// async function deployMockPriceFeedFixture(deployer) {
-// 	const PriceFeed = await ethers.getContractFactory("MockPriceFeed")
-// 	let priceFeed = await PriceFeed.connect(deployer).deploy()
-// 	await priceFeed.deployed()
-// 	return { priceFeed }
-// }
+async function deployLocalChainlinkFunctions(admin, deployer) {
+	const requestConfigPath = path.join(process.cwd(), "Functions-request-config.js") // @dev Update this to point to your desired request config file
+	const requestConfig = require(requestConfigPath)
+	let secretsLocation, encryptedSecretsReference;
+	const localFunctionsTestnetInfo = await startLocalFunctionsTestnet(admin, requestConfigPath)
+	await localFunctionsTestnetInfo.getFunds(deployer.address, {
+		weiAmount: ethers.utils.parseEther("1").toString(), // 1000 ETH
+		juelsAmount: ethers.utils.parseEther("10000").toString(), // 1000 LINK
+	})
+	functionsAddresses = {
+		functionsRouter: localFunctionsTestnetInfo.functionsRouterContract.address,
+		linkToken: localFunctionsTestnetInfo.linkTokenContract.address,
+		donId: localFunctionsTestnetInfo.donId,
+	}
+	const donIdBytes32 = hre.ethers.utils.formatBytes32String(functionsAddresses.donId)
+	const functionsRouter = new ethers.Contract(
+		functionsAddresses.functionsRouter,
+		FunctionsRouter.FunctionsRouterSource.abi,
+		admin
+	)
+	const autoConsumerContractFactory = await ethers.getContractFactory(
+		"AutomatedFunctionsConsumer"
+	)
+	const autoConsumerContract = await autoConsumerContractFactory.deploy(
+		functionsAddresses.functionsRouter,
+		donIdBytes32
+	)
+	await autoConsumerContract.deployTransaction.wait(1)
+
+	const consumerAddress = autoConsumerContract.address
+	const allowlist = await functionsRouter.getAllowListId()
+	const txOptions = { confirmations: 1 }
+	const sm = new SubscriptionManager({ signer: admin, linkTokenAddress: functionsAddresses.linkToken, functionsRouterAddress: functionsAddresses.functionsRouter })
+	await sm.initialize()
+	const subscriptionId = await sm.createSubscription({ consumerAddress, txOptions })
+
+	const juelsAmount = ethers.utils.parseUnits(LINK_AMOUNT, 18).toString()
+	const fundTxReceipt = await sm.fundSubscription({ juelsAmount, subscriptionId, txOptions })
+	const subInfo = await sm.getSubscriptionInfo(subscriptionId)
+	// parse  balances into LINK for readability
+	subInfo.balance = ethers.utils.formatEther(subInfo.balance) + " LINK"
+	subInfo.blockedBalance = ethers.utils.formatEther(subInfo.blockedBalance) + " LINK"
+
+	const functionsRequestCBOR = buildRequestCBOR({
+		codeLocation: requestConfig.codeLocation,
+		codeLanguage: requestConfig.codeLanguage,
+		source: requestConfig.source,
+		args: requestConfig.args,
+		secretsLocation,
+		encryptedSecretsReference,
+	})
+	const setRequestTx = await autoConsumerContract.setRequest(
+		subscriptionId,
+		250000,
+		5,
+		functionsRequestCBOR
+	)
+	await setRequestTx.wait(1)
+	// console.log("\nSet request Tx confirmed")
+	return { functionsAddresses, autoConsumerContract }
+}
 
 async function deployrBRLLPoolFixture(admin, deployer, tselic, drex) {
 	const rBRLLPool = await ethers.getContractFactory("rBRLLPool")
@@ -274,7 +335,7 @@ async function deployLiquidatePoolFixture(admin, deployer, rbrllpool, tselic, dr
 module.exports = {
 	deployTokensFixture,
 	deployUniPoolFixture,
-	// deployMockPriceFeedFixture,
+	deployLocalChainlinkFunctions,
 	deployrBRLLPoolFixture,
 	deployLiquidatePoolFixture,
 	deployInterestRateModelFixture,
