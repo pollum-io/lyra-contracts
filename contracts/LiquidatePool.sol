@@ -97,37 +97,38 @@ contract LiquidatePool is AccessControl {
 
 	/**
 	 * @dev liquidate a give amout of tselic on UniswapV3
-	 * @param tselicAmount the amout of tselic
-	 * @param minReturn the minimum amount of return
+	 * @param drexAmount the amout of drex to be liquidated
+	 * @param amountInMaximum the maximum amount of tselic to be liquidated
 	 * @param receiver used to receive token
 	 */
 	function flashLiquidateTSELIC(
-		uint256 tselicAmount,
-		uint256 minReturn,
+		uint256 drexAmount,
+		uint256 amountInMaximum,
 		address receiver
-	) external {
+	) external returns (uint256 amountLiquidated) {
 		require(msg.sender == rbrllpool, "unauthorized");
 
-		tselic.approve(address(swapRouter), tselicAmount);
+		tselic.approve(address(swapRouter), amountInMaximum);
 
-		// We set the sqrtPriceLimitx96 to be 0 to ensure we swap our exact input amount.
-		ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+		// We set the sqrtPriceLimitx96 to be 0 to ensure we swap our exact output amount.
+		ISwapRouter.ExactOutputSingleParams memory params = ISwapRouter.ExactOutputSingleParams({
 			tokenIn: address(tselic),
 			tokenOut: address(drex),
 			fee: 3000,
-			recipient: msg.sender,
+			recipient: address(this),
 			deadline: block.timestamp,
-			amountIn: tselicAmount,
-			amountOutMinimum: minReturn,
+			amountOut: drexAmount,
+			amountInMaximum: amountInMaximum,
 			sqrtPriceLimitX96: 0
 		});
 
-		// The call to `exactInputSingle` executes the swap.
-		uint256 amountOut = swapRouter.exactInputSingle(params);
-
-		uint256 feeAmount = amountOut.mul(liquidateFeeRate).div(FEE_COEFFICIENT);
-		uint256 amountAfterFee = amountOut.sub(feeAmount);
+		// The call to `exactOutputSingle` executes the swap.
+		amountLiquidated = swapRouter.exactOutputSingle(params);
+		uint256 leftover = amountInMaximum.sub(amountLiquidated);
+		uint256 feeAmount = drexAmount.mul(liquidateFeeRate).div(FEE_COEFFICIENT);
+		uint256 amountAfterFee = drexAmount.sub(feeAmount);
 		drex.safeTransfer(receiver, amountAfterFee);
 		drex.safeTransfer(feeCollector, feeAmount);
+		tselic.safeTransfer(address(rbrllpool), leftover);
 	}
 }

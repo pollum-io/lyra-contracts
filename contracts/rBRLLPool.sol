@@ -307,7 +307,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * @param _amount the amount of DREX.
 	 */
 	function borrowDREX(uint256 _amount) external whenNotPaused realizeInterest {
-		require(_amount > 0, "Borrow DREX should be more thea 0.");
+		require(_amount > 0, "Borrow DREX should be more than 0.");
 
 		// convert to rBRLL.
 		uint256 convertTorBRLL = _amount.mul(10 ** 12);
@@ -364,40 +364,39 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 * Emits a `LiquidationRecord` event.
 	 *
 	 * @param borrower The borrower be liquidated
-	 * @param repayAmount The amount of the rBRLL to repay
-	 * @param minReturn the minimum amount of return
+	 * @param repayAmount The amount of the Drex to repay
+	 * @param tselicInMaximum the maximum amount of tselic to be liquidated
 	 */
 	function flashLiquidateBorrow(
 		address borrower,
 		uint256 repayAmount,
-		uint256 minReturn
+		uint256 tselicInMaximum
 	) external whenNotPaused realizeInterest {
 		require(liquidateProvider[borrower], "borrower is not a provider.");
 		_liquidateProcedure(borrower, repayAmount);
-		liquidatePool.flashLiquidateTSELIC(repayAmount, minReturn, msg.sender);
+		tselic.transfer(address(liquidatePool), tselicInMaximum);
+		uint256 tselicAmount = liquidatePool.flashLiquidateTSELIC(
+			repayAmount,
+			tselicInMaximum,
+			msg.sender
+		);
+		require(
+			depositedTSELIC[borrower] >= tselicAmount,
+			"repayAmount should be less than borrower's deposit."
+		);
+		totalDepositedTSELIC -= tselicAmount;
+		depositedTSELIC[borrower] -= tselicAmount;
 
 		emit LiquidationRecord(msg.sender, borrower, repayAmount, block.timestamp);
 	}
 
 	function _liquidateProcedure(address borrower, uint256 repayAmount) internal {
 		require(msg.sender != borrower, "don't liquidate self.");
-		uint256 borrowedBRL = getBorrowrBRLLAmountByShares(borrowedShares[borrower]);
-		require(borrowedBRL >= repayAmount, "repayAmount should be less than borrower's debt.");
-		_burnrBRLL(msg.sender, repayAmount);
-
-		_burnrBRLLDebt(borrower, repayAmount);
-
-		// TODO verify the decimal places.
-		uint256 liquidateTSELIC = repayAmount.div(_tselicPrice());
-
-		require(
-			depositedTSELIC[borrower] >= liquidateTSELIC,
-			"repayAmount should be less than borrower's deposit."
-		);
-		totalDepositedTSELIC -= liquidateTSELIC;
-		depositedTSELIC[borrower] -= liquidateTSELIC;
-
-		tselic.transfer(address(liquidatePool), repayAmount);
+		uint256 borrowedrBRLL = getBorrowrBRLLAmountByShares(borrowedShares[borrower]);
+		uint256 convertToDREX = borrowedrBRLL.div(1e12) + 1;
+		require(convertToDREX >= repayAmount, "repayAmount should be less than borrower's debt.");
+		_burnrBRLL(msg.sender, borrowedrBRLL);
+		_burnrBRLLDebt(borrower, borrowedrBRLL);
 	}
 
 	/**
