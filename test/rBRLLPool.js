@@ -44,20 +44,20 @@ describe("rBRLLPool", function () {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-			// deploy tokens
-			; ({ drexToken, tselicToken } = await deployTokensFixture(
-				deployer,
-				drexInvestor,
-				tselicInvestor
-			))
+		// deploy tokens
+		;({ drexToken, tselicToken } = await deployTokensFixture(
+			deployer,
+			drexInvestor,
+			tselicInvestor
+		))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
 		if (TEST_CHAINLINK) {
-			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
+			;({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
 				admin,
 				deployer
 			))
 		} else {
-			; ({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
+			;({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
 		}
 
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
@@ -140,7 +140,9 @@ describe("rBRLLPool", function () {
 			await mineBlockWithTimestamp(ethers.provider, now)
 			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
 			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
-			await tselicToken.connect(tselicInvestor).approve(rbrllpool.address, amountToSupplyTSelic)
+			await tselicToken
+				.connect(tselicInvestor)
+				.approve(rbrllpool.address, amountToSupplyTSelic)
 			await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
 		})
 		describe("Withdraw DREX", function () {
@@ -190,14 +192,15 @@ describe("rBRLLPool", function () {
 			})
 
 			it("Should fail if supply zero TSELIC", async function () {
-				await expect(rbrllpool.connect(tselicInvestor).withdrawTSELIC(0)).to.be.revertedWith(
-					"Withdraw TSELIC should be more than 0."
-				)
+				await expect(
+					rbrllpool.connect(tselicInvestor).withdrawTSELIC(0)
+				).to.be.revertedWith("Withdraw TSELIC should be more than 0.")
 			})
 
 			it("Should fail if withdraw more than supply", async function () {
-				await expect(rbrllpool.connect(tselicInvestor).withdrawTSELIC(amountToSupplyTSelic + 1)).to
-					.be.reverted
+				await expect(
+					rbrllpool.connect(tselicInvestor).withdrawTSELIC(amountToSupplyTSelic + 1)
+				).to.be.reverted
 			})
 		})
 	})
@@ -207,7 +210,9 @@ describe("rBRLLPool", function () {
 			await mineBlockWithTimestamp(ethers.provider, now)
 			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
 			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
-			await tselicToken.connect(tselicInvestor).approve(rbrllpool.address, amountToSupplyTSelic)
+			await tselicToken
+				.connect(tselicInvestor)
+				.approve(rbrllpool.address, amountToSupplyTSelic)
 			await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
 		})
 		describe("Borrow Drex", function () {
@@ -249,7 +254,9 @@ describe("rBRLLPool", function () {
 			// await interestRateModel.connect(deployer).setAPR(0)
 			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
 			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
-			await tselicToken.connect(tselicInvestor).approve(rbrllpool.address, amountToSupplyTSelic)
+			await tselicToken
+				.connect(tselicInvestor)
+				.approve(rbrllpool.address, amountToSupplyTSelic)
 			await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
 
 			await rbrllpool.connect(tselicInvestor).borrowDREX(amountToBorrowDrex)
@@ -263,16 +270,21 @@ describe("rBRLLPool", function () {
 			it("Should be able to repay 50%", async function () {
 				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
 
-				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(tselicInvestor.address)
-				const borrowrBRLL = (await rbrllpool.getBorrowedAmount(tselicInvestor.address)).div(2)
+				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
+				const borrowrBRLL = (await rbrllpool.getBorrowedAmount(tselicInvestor.address)).div(
+					2
+				)
 
 				const borrowDREX = borrowrBRLL.div(1e12)
 
 				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
 
 				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
-				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(tselicInvestor.address)
-
+				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
 
 				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
 				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
@@ -280,7 +292,9 @@ describe("rBRLLPool", function () {
 			it("Should be able to repay 100%", async function () {
 				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
 
-				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(tselicInvestor.address)
+				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
 				const borrowrBRLL = await rbrllpool.getBorrowedAmount(tselicInvestor.address)
 
 				const borrowDREX = borrowrBRLL.div(1e12)
@@ -288,7 +302,9 @@ describe("rBRLLPool", function () {
 				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
 
 				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
-				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(tselicInvestor.address)
+				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
 
 				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
 				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
@@ -445,7 +461,6 @@ describe("rBRLLPool", function () {
 	})
 
 	describe("Flash liquidate", function () {
-
 		beforeEach(async () => {
 			now = now + ONE_HOUR
 			await mineBlockWithTimestamp(ethers.provider, now)
