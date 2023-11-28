@@ -161,17 +161,17 @@ async function deployUniPoolFixture(deployer, tselicToken, drexToken) {
 		nonfungibleTokenPositionDescriptor.address
 	)
 	await nonfungiblePositionManager.deployed()
-	endereco1 = drexToken.address
-	endereco2 = tselicToken.address
+	token0 = tselicToken.address
+	token1 = drexToken.address
 	if (tselicToken.address > drexToken.address) {
-		endereco1 = tselicToken.address
-		endereco2 = drexToken.address
+		token0 = drexToken.address
+		token1 = tselicToken.address
 	}
 	await nonfungiblePositionManager
 		.connect(deployer)
 		.createAndInitializePoolIfNecessary(
-			endereco2,
-			endereco1,
+			token0,
+			token1,
 			3000,
 			encodePriceSqrt(13991000000, 1000000000000000000),
 			{ gasLimit: 5000000 }
@@ -304,6 +304,13 @@ async function deployLocalChainlinkFunctions(admin, deployer) {
 	return { functionsAddresses, autoConsumerContract }
 }
 
+async function deployMockPriceFeedFixture(deployer) {
+	const FunctionsChainlink = await ethers.getContractFactory("MockChainlink")
+	let autoConsumerContract = await FunctionsChainlink.connect(deployer).deploy()
+	await autoConsumerContract.deployed()
+	return { autoConsumerContract }
+}
+
 async function deployrBRLLPoolFixture(admin, deployer, tselic, drex) {
 	const rBRLLPool = await ethers.getContractFactory("rBRLLPool")
 	let rbrllpool = await rBRLLPool
@@ -343,6 +350,7 @@ module.exports = {
 	deployTokensFixture,
 	deployUniPoolFixture,
 	deployLocalChainlinkFunctions,
+	deployMockPriceFeedFixture,
 	deployrBRLLPoolFixture,
 	deployLiquidatePoolFixture,
 	deployInterestRateModelFixture,
