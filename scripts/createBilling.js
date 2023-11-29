@@ -2,13 +2,13 @@ const { SubscriptionManager } = require("@chainlink/functions-toolkit")
 const FunctionsRouter = require("@chainlink/functions-toolkit/dist/v1_contract_sources/FunctionsRouter")
 const { networks } = require("../networks")
 const LINK_AMOUNT = "10"
-	; (async () => {
-		console.log('Script imported');
-		// await createBilling()
-	})()
+;(async () => {
+	console.log("Script imported")
+	// await createBilling()
+})()
 async function createBilling() {
 	let signer
-		;[signer] = await ethers.getSigners()
+	;[signer] = await ethers.getSigners()
 	let networkName = network.name
 	if (networkName === "hardhat") {
 		networkName = "localFunctionsTestnet"
