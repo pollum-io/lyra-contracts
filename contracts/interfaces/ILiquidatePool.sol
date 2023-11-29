@@ -6,5 +6,5 @@ interface ILiquidatePool {
 		uint256 tselicAmount,
 		uint256 minReturn,
 		address receiver
-	) external;
+	) external returns (uint256);
 }

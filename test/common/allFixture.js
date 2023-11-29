@@ -79,11 +79,13 @@ async function deployTokensFixture(deployer, investor, investor2) {
 	await drexToken.deployed()
 	await tselicToken.deployed()
 
-	await drexToken.connect(deployer).transfer(investor.address, ethers.utils.parseUnits("1000", 6))
+	await drexToken
+		.connect(deployer)
+		.transfer(investor.address, ethers.utils.parseUnits("400000", 6))
 
 	await drexToken
 		.connect(deployer)
-		.transfer(investor2.address, ethers.utils.parseUnits("1000", 6))
+		.transfer(investor2.address, ethers.utils.parseUnits("400000", 6))
 
 	await tselicToken
 		.connect(deployer)
@@ -237,7 +239,7 @@ async function deployUniPoolFixture(deployer, tselicToken, drexToken) {
 		amount0Min: 0,
 		amount1Min: 0,
 		recipient: deployer.address,
-		deadline: Math.floor(Date.now() / 1000) + 60 * 10,
+		deadline: 32532350693,
 	}
 	const tx = await nonfungiblePositionManager
 		.connect(deployer)

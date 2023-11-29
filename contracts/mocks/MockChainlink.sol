@@ -8,7 +8,7 @@ contract MockChainlink {
 
 	constructor() {
 		selicRate = 12250000;
-		unitValue = 14009949999999999803392;
+		unitValue = 14000000000000000000000;
 		maturityTime = 1867014000;
 	}
 
