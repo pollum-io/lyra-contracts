@@ -21,7 +21,7 @@ Token ERC20 com mecanismo de rebase representando direitos de resgate dos usuár
 
 **LiquidatePool**
 
-Contrato auxiliar que executa liquidações descentralizadas de posições insuficientemente colateralizadas via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
+Contrato auxiliar que executa liquidações descentralizadas de posições via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
 
 **InterestRateModel**
 
