@@ -7,7 +7,7 @@ const { networks } = require("../networks")
 const hre = require("hardhat")
 const createBilling = require("./createBilling");
 const NEED_DEPLOY_BILLING = true;
-const INTERVAL = 5; //Value in seconds
+const INTERVAL = 86400; //Value in seconds
 require("dotenv").config()
 async function main() {
 	const networkName = network.name;
