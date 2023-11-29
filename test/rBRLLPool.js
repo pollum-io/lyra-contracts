@@ -44,20 +44,20 @@ describe("rBRLLPool", function () {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-		// deploy tokens
-		;({ drexToken, tselicToken } = await deployTokensFixture(
-			deployer,
-			drexInvestor,
-			tselicInvestor
-		))
+			// deploy tokens
+			; ({ drexToken, tselicToken } = await deployTokensFixture(
+				deployer,
+				drexInvestor,
+				tselicInvestor
+			))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
 		if (TEST_CHAINLINK) {
-			;({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
+			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
 				admin,
 				deployer
 			))
 		} else {
-			;({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
+			; ({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
 		}
 
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)
@@ -247,80 +247,9 @@ describe("rBRLLPool", function () {
 		})
 	})
 
-	describe("Repay", function () {
-		beforeEach(async () => {
-			now = now + ONE_HOUR
-			await mineBlockWithTimestamp(ethers.provider, now)
-			// await interestRateModel.connect(deployer).setAPR(0)
-			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
-			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
-			await tselicToken
-				.connect(tselicInvestor)
-				.approve(rbrllpool.address, amountToSupplyTSelic)
-			await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
-
-			await rbrllpool.connect(tselicInvestor).borrowDREX(amountToBorrowDrex)
-			await drexToken.connect(tselicInvestor).approve(rbrllpool.address, BIGNUMBER)
-			now = now + ONE_YEAR
-			await mineBlockWithTimestamp(ethers.provider, now)
-			// to realize interest
-			await rbrllpool.connect(admin).setReserveFactor(0)
-		})
-		describe("Repay DREX", function () {
-			it("Should be able to repay 50%", async function () {
-				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
-
-				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(
-					tselicInvestor.address
-				)
-				const borrowrBRLL = (await rbrllpool.getBorrowedAmount(tselicInvestor.address)).div(
-					2
-				)
-
-				const borrowDREX = borrowrBRLL.div(1e12)
-
-				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
-
-				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
-				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
-					tselicInvestor.address
-				)
-
-				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
-				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
-			})
-			it("Should be able to repay 100%", async function () {
-				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
-
-				const borrowSharesBefore = await rbrllpool.getBorrowedSharesOf(
-					tselicInvestor.address
-				)
-				const borrowrBRLL = await rbrllpool.getBorrowedAmount(tselicInvestor.address)
-
-				const borrowDREX = borrowrBRLL.div(1e12)
-
-				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
-
-				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
-				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
-					tselicInvestor.address
-				)
-
-				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
-				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
-			})
-
-			it("Should fail if repay zero DREX", async function () {
-				await expect(rbrllpool.connect(tselicInvestor).repayDREX(0)).to.be.revertedWith(
-					"Repay DREX should be more than 0."
-				)
-			})
-		})
-	})
-
 	describe("Interest", function () {
 		beforeEach(async () => {
-			now = now + ONE_HOUR
+			now = now + ONE_DAY
 			await mineBlockWithTimestamp(ethers.provider, now)
 			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
 			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
@@ -364,7 +293,6 @@ describe("rBRLLPool", function () {
 					amountToSupplyDrex.mul(10625).div(10000)
 				)
 			})
-
 			it("Should be able to withdraw interest income", async function () {
 				// borrow all drex
 				await rbrllpool.connect(tselicInvestor).borrowDREX(amountToSupplyDrex)
@@ -432,7 +360,6 @@ describe("rBRLLPool", function () {
 					newTotalSupplyrBRLL.sub(oldTotalSupplyrBRLL)
 				)
 			})
-
 			it("Should be able the same debt and brll supply when 50% utilization rate", async function () {
 				const oldTotalSupplyrBRLL = await rbrllpool.totalSupplyrBRLL()
 				// borrow 50% drex
@@ -460,6 +387,70 @@ describe("rBRLLPool", function () {
 		})
 	})
 
+	describe("Repay", function () {
+		beforeEach(async () => {
+			now = now + ONE_HOUR
+			await mineBlockWithTimestamp(ethers.provider, now)
+			// await interestRateModel.connect(deployer).setAPR(0)
+			await drexToken.connect(drexInvestor).approve(rbrllpool.address, amountToSupplyDrex)
+			await rbrllpool.connect(drexInvestor).supplyDREX(amountToSupplyDrex)
+			await tselicToken
+				.connect(tselicInvestor)
+				.approve(rbrllpool.address, amountToSupplyTSelic)
+			await rbrllpool.connect(tselicInvestor).supplyTSELIC(amountToSupplyTSelic)
+
+			await rbrllpool.connect(tselicInvestor).borrowDREX(amountToBorrowDrex)
+			await drexToken.connect(tselicInvestor).approve(rbrllpool.address, BIGNUMBER)
+			now = now + ONE_YEAR
+			await mineBlockWithTimestamp(ethers.provider, now)
+			// to realize interest
+			await rbrllpool.connect(admin).setReserveFactor(0)
+		})
+		describe("Repay DREX", function () {
+			it("Should be able to repay 50%", async function () {
+				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
+
+				const borrowrBRLL = (await rbrllpool.getBorrowedAmount(tselicInvestor.address)).div(
+					2
+				)
+
+				const borrowDREX = borrowrBRLL.div(1e12)
+
+				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
+
+				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
+				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
+
+				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
+				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
+			})
+			it("Should be able to repay 100%", async function () {
+				const drexAmountBefore = await drexToken.balanceOf(tselicInvestor.address)
+
+				const borrowrBRLL = await rbrllpool.getBorrowedAmount(tselicInvestor.address)
+
+				const borrowDREX = borrowrBRLL.div(1e12)
+
+				await rbrllpool.connect(tselicInvestor).repayDREX(borrowDREX)
+
+				const drexAmountAfter = await drexToken.balanceOf(tselicInvestor.address)
+				const borrowSharesAfter = await rbrllpool.getBorrowedSharesOf(
+					tselicInvestor.address
+				)
+
+				expect(await rbrllpool.totalBorrowShares()).to.be.equal(borrowSharesAfter)
+				expect(drexAmountBefore).to.be.equal(drexAmountAfter.add(borrowDREX))
+			})
+
+			it("Should fail if repay zero DREX", async function () {
+				await expect(rbrllpool.connect(tselicInvestor).repayDREX(0)).to.be.revertedWith(
+					"Repay DREX should be more than 0."
+				)
+			})
+		})
+	})
 	describe("Flash liquidate", function () {
 		beforeEach(async () => {
 			now = now + ONE_HOUR

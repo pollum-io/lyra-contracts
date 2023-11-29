@@ -22,7 +22,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	uint256 public constant APR_COEFFICIENT = 1e8;
 	// Used to calculate the fee base.
 	uint256 public constant FEE_COEFFICIENT = 1e8;
-	// Used to calculate shares of TSELIC deposited by users.
+	// total TSELIC deposited by users.
 	uint256 public totalDepositedTSELIC;
 	// Used to calculate total supply of rBRLL.
 	uint256 public totalSupplyrBRLL;
@@ -30,7 +30,7 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	uint256 public safeCollateralRate = 101 * 1e18;
 	uint256 public reserveFactor;
 
-	// Used to record the user's TSELIC shares.
+	// Used to record the user's TSELIC.
 	mapping(address => uint256) public depositedTSELIC;
 	// Used to record the user's loan shares of rBRLL.
 	mapping(address => uint256) borrowedShares;
@@ -247,16 +247,16 @@ contract rBRLLPool is rBRLL, AccessControl, Pausable {
 	 *
 	 */
 	function withdrawAllTSELIC() external whenNotPaused realizeInterest {
-		uint256 withdrawShares = depositedTSELIC[msg.sender];
-		require(withdrawShares > 0, "Withdraw TSELIC should be more than 0.");
+		uint256 withdrawAmount = depositedTSELIC[msg.sender];
+		require(withdrawAmount > 0, "Withdraw TSELIC should be more than 0.");
 
-		totalDepositedTSELIC -= withdrawShares;
+		totalDepositedTSELIC -= withdrawAmount;
 		depositedTSELIC[msg.sender] = 0;
 
 		_requireIsSafeCollateralRate(msg.sender);
-		tselic.transfer(msg.sender, withdrawShares);
+		tselic.transfer(msg.sender, withdrawAmount);
 
-		emit WithdrawTSELIC(msg.sender, withdrawShares, block.timestamp);
+		emit WithdrawTSELIC(msg.sender, withdrawAmount, block.timestamp);
 	}
 
 	/**

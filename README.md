@@ -10,7 +10,22 @@ O Lyra Loans é um protocolo de empréstimos descentralizado desenvolvido para o
 O protocolo permite que instituições depositem títulos públicos como garantia para tomar empréstimos em DREX de forma sobrecolateralizada. Os usuários podem emprestar seu DREX nessas pools para obter rendimentos lastreados nesses títulos.
 
 ## Contratos
-Breve explicação sobre os contratos
+
+**rBRLLPool**
+
+Pool principal do protocolo que governa e controla a maior parte da lógica: aceita depósitos de colateral TSELIC e empréstimos DREX, calcula juros e taxas, mantém registros de posições e gerencia riscos via liquidações e recall de empréstimos.
+
+**rBRLL**
+
+Token ERC20 com mecanismo de rebase representando direitos de resgate dos usuários sobre saldos e rendimentos das pools. Expande conforme juros são acumulados. Resgatável 1:1 por DREX.
+
+**LiquidatePool**
+
+Contrato auxiliar que executa liquidações descentralizadas de posições insuficientemente colateralizadas via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
+
+**InterestRateModel**
+
+Determina taxas de juros variáveis das pools consultando dados de taxa Selic vigente via oráculos Chainlink. Define parâmetros de taxa de juros aplicados nas pools.
 
 ## Quick Start
 Primeiro, clone o repositório e instale as dependências:
