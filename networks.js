@@ -6,14 +6,14 @@
 
 // Loads environment variables from .env.enc file (if it exists)
 require("dotenv").config()
-
+ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 const DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS = 2
 
 const npmCommand = process.env.npm_lifecycle_event
 const isTestEnvironment = npmCommand == "test" || npmCommand == "test:unit"
 
 // Set EVM private keys (required)
-const PRIVATE_KEY = process.env.PRIVATE_KEY
+const PRIVATE_KEY = process.env.PRIVATE_KEY || ZERO_ADDRESS
 
 // TODO @dev - set this to run the accept.js task.
 const SECOND_PRIVATE_KEY = process.env.SECOND_PRIVATE_KEY
