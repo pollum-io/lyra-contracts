@@ -39,12 +39,7 @@ module.exports = {
 	},
 	etherscan: {
 		apiKey: {
-			mainnet: networks.ethereum.verifyApiKey,
-			avalanche: networks.avalanche.verifyApiKey,
-			polygon: networks.polygon.verifyApiKey,
-			sepolia: networks.ethereumSepolia.verifyApiKey,
-			polygonMumbai: networks.polygonMumbai.verifyApiKey,
-			avalancheFujiTestnet: networks.avalancheFuji.verifyApiKey,
+			polygonMumbai: networks.polygonMumbai.verifyApiKey
 		},
 	},
 	namedAccounts: {

@@ -32,80 +32,14 @@ if (SECOND_PRIVATE_KEY) {
 
 const networks = {
 	ethereum: {
-		url: process.env.ETHEREUM_RPC_URL || "UNSET",
+		url:  "https://rpc-evm-sidechain.xrpl.org",
 		gasPrice: undefined,
 		nonce: undefined,
 		accounts,
 		verifyApiKey: process.env.ETHERSCAN_API_KEY || "UNSET",
-		chainId: 1,
+		chainId: 1440002,
 		confirmations: DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS,
-		nativeCurrencySymbol: "ETH",
-		linkToken: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-		linkPriceFeed: "0xDC530D9457755926550b59e8ECcdaE7624181557", // LINK/ETH
-		functionsRouter: "0x65Dcc24F8ff9e51F10DCc7Ed1e4e2A61e6E14bd6",
-		donId: "fun-ethereum-mainnet-1",
-		gatewayUrls: [
-			"https://01.functions-gateway.chain.link/",
-			"https://02.functions-gateway.chain.link/",
-		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-	},
-	avalanche: {
-		url: process.env.AVALANCHE_RPC_URL || "UNSET",
-		gasPrice: undefined,
-		nonce: undefined,
-		accounts,
-		verifyApiKey: process.env.SNOWTRACE_API_KEY || "UNSET",
-		chainId: 43114,
-		confirmations: DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS,
-		nativeCurrencySymbol: "AVAX",
-		linkToken: "0x5947BB275c521040051D82396192181b413227A3",
-		linkPriceFeed: "0x1b8a25F73c9420dD507406C3A3816A276b62f56a", // LINK/AVAX
-		functionsRouter: "0x9f82a6A0758517FD0AfA463820F586999AF314a0",
-		donId: "fun-avalanche-mainnet-1",
-		gatewayUrls: [
-			"https://01.functions-gateway.chain.link/",
-			"https://02.functions-gateway.chain.link/",
-		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-	},
-	polygon: {
-		url: process.env.POLYGON_RPC_URL || "UNSET",
-		gasPrice: undefined,
-		nonce: undefined,
-		accounts,
-		verifyApiKey: process.env.POLYGONSCAN_API_KEY || "UNSET",
-		chainId: 137,
-		confirmations: DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS,
-		nativeCurrencySymbol: "ETH",
-		linkToken: "0xb0897686c545045aFc77CF20eC7A532E3120E0F1",
-		linkPriceFeed: "0x5787BefDc0ECd210Dfa948264631CD53E68F7802", // LINK/MATIC
-		functionsRouter: "0xdc2AAF042Aeff2E68B3e8E33F19e4B9fA7C73F10",
-		donId: "fun-polygon-mainnet-1",
-		gatewayUrls: [
-			"https://01.functions-gateway.chain.link/",
-			"https://02.functions-gateway.chain.link/",
-		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-	},
-	ethereumSepolia: {
-		url: process.env.ETHEREUM_SEPOLIA_RPC_URL || "UNSET",
-		gasPrice: undefined,
-		nonce: undefined,
-		accounts,
-		verifyApiKey: process.env.ETHERSCAN_API_KEY || "UNSET",
-		chainId: 11155111,
-		confirmations: DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS,
-		nativeCurrencySymbol: "ETH",
-		linkToken: "0x779877A7B0D9E8603169DdbD7836e478b4624789",
-		linkPriceFeed: "0x42585eD362B3f1BCa95c640FdFf35Ef899212734", // LINK/ETH
-		functionsRouter: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
-		donId: "fun-ethereum-sepolia-1",
-		gatewayUrls: [
-			"https://01.functions-gateway.testnet.chain.link/",
-			"https://02.functions-gateway.testnet.chain.link/",
-		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+		nativeCurrencySymbol: "XRP"
 	},
 	polygonMumbai: {
 		url: process.env.POLYGON_MUMBAI_RPC_URL || "UNSET",
@@ -124,36 +58,6 @@ const networks = {
 			"https://01.functions-gateway.testnet.chain.link/",
 			"https://02.functions-gateway.testnet.chain.link/",
 		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-	},
-	avalancheFuji: {
-		url: process.env.AVALANCHE_FUJI_RPC_URL || "UNSET",
-		gasPrice: undefined,
-		nonce: undefined,
-		accounts,
-		verifyApiKey: process.env.FUJI_SNOWTRACE_API_KEY || "UNSET",
-		chainId: 43113,
-		confirmations: DEFAULT_VERIFICATION_BLOCK_CONFIRMATIONS,
-		nativeCurrencySymbol: "AVAX",
-		linkToken: "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
-		linkPriceFeed: "0x79c91fd4F8b3DaBEe17d286EB11cEE4D83521775", // LINK/AVAX
-		functionsRouter: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
-		donId: "fun-avalanche-fuji-1",
-		gatewayUrls: [
-			"https://01.functions-gateway.testnet.chain.link/",
-			"https://02.functions-gateway.testnet.chain.link/",
-		],
-		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-	},
-	// localFunctionsTestnet is updated dynamically by scripts/startLocalFunctionsTestnet.js so it should not be modified here
-	localFunctionsTestnet: {
-		url: "http://localhost:8545/",
-		accounts,
-		confirmations: 1,
-		nativeCurrencySymbol: "ETH",
-		linkToken: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
-		functionsRouter: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
-		donId: "local-functions-testnet",
 		uniswapV3Router: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 	},
 }
