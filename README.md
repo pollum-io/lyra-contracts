@@ -7,7 +7,7 @@
 ## Overview
 O Lyra Loans é um protocolo de empréstimos descentralizado desenvolvido para o HACKATHON: Web3 – Tokenização do Tesouro Nacional.
 
-O protocolo permite que instituições depositem títulos públicos como garantia para tomar empréstimos em DREX de forma sobrecolateralizada. Os usuários podem emprestar seu DREX nessas pools para obter rendimentos lastreados nesses títulos.
+O protocolo permite o depósito de títulos públicos como garantia para tomar empréstimos em DREX de forma sobrecolateralizada. Os usuários podem emprestar seu DREX nessas pools para obter rendimentos lastreados nesses títulos.
 
 ## Contratos
 
@@ -21,7 +21,7 @@ Token ERC20 com mecanismo de rebase representando direitos de resgate dos usuár
 
 **LiquidatePool**
 
-Contrato auxiliar que executa liquidações descentralizadas de posições insuficientemente colateralizadas via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
+Contrato auxiliar que executa liquidações descentralizadas de posições via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
 
 **InterestRateModel**
 
