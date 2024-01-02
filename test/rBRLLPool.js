@@ -44,20 +44,20 @@ describe("rBRLLPool", function () {
 		// const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545")
 		// ethers.provider = provider
 		;[admin, deployer, drexInvestor, tselicInvestor, feeCollector] = await ethers.getSigners()
-			// deploy tokens
-			; ({ drexToken, tselicToken } = await deployTokensFixture(
-				deployer,
-				drexInvestor,
-				tselicInvestor
-			))
+		// deploy tokens
+		;({ drexToken, tselicToken } = await deployTokensFixture(
+			deployer,
+			drexInvestor,
+			tselicInvestor
+		))
 		swapRouter = await deployUniPoolFixture(deployer, tselicToken, drexToken)
 		if (TEST_CHAINLINK) {
-			; ({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
+			;({ functionsAddresses, autoConsumerContract } = await deployLocalChainlinkFunctions(
 				admin,
 				deployer
 			))
 		} else {
-			; ({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
+			;({ autoConsumerContract } = await deployMockPriceFeedFixture(deployer))
 		}
 
 		rbrllpool = await deployrBRLLPoolFixture(admin, deployer, tselicToken, drexToken)

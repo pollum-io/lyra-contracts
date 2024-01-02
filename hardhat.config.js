@@ -39,7 +39,7 @@ module.exports = {
 	},
 	etherscan: {
 		apiKey: {
-			polygonMumbai: networks.polygonMumbai.verifyApiKey
+			polygonMumbai: networks.polygonMumbai.verifyApiKey,
 		},
 	},
 	namedAccounts: {
