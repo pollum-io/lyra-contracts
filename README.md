@@ -5,7 +5,7 @@
 <p align="center"> <img src="img/lyra.png" width="300" alt="Lyra Loans"> </p>
 
 ## Overview
-O Lyra Loans é um protocolo de empréstimos descentralizado desenvolvido para o XRP Ledger Brasil Hackathon Nacional.
+O Lyra Loans é um protocolo de empréstimos descentralizado desenvolvido para o XRP Ledger Brasil Hackathon.
 
 O protocolo permite o depósito de títulos públicos como garantia para tomar empréstimos em DREX de forma sobrecolateralizada. Os usuários podem emprestar seu DREX nessas pools para obter rendimentos lastreados nesses títulos.
 
