@@ -5,44 +5,44 @@
 <p align="center"> <img src="img/lyra.png" width="300" alt="Lyra Loans"> </p>
 
 ## Overview
-Lyra Loans is a decentralized lending protocol developed for the HACKATHON: Web3 - Tokenization of the National Treasury.
+O Lyra Loans é um protocolo de empréstimos descentralizado desenvolvido para o XRP Ledger Brasil Hackathon Nacional.
 
-The protocol allows institutions to deposit government bonds as collateral to take out overcollateralized loans in DREX. Users can lend their DREX in these pools to earn yields backed by these bonds.
+O protocolo permite o depósito de títulos públicos como garantia para tomar empréstimos em DREX de forma sobrecolateralizada. Os usuários podem emprestar seu DREX nessas pools para obter rendimentos lastreados nesses títulos.
 
-## Contracts
+## Contratos
 
 **rBRLLPool**
 
-The main pool of the protocol that governs and controls most of the logic: accepts TSELIC collateral deposits and DREX loans, calculates interest and fees, maintains position records, and manages risks via liquidations and loan recalls.
+Pool principal do protocolo que governa e controla a maior parte da lógica: aceita depósitos de colateral TSELIC e empréstimos DREX, calcula juros e taxas, mantém registros de posições e gerencia riscos via liquidações e recall de empréstimos.
 
 **rBRLL**
 
-ERC20 token with rebase mechanism representing users' redemption rights over pool balances and earnings. Expands as interest accumulates. Redeemable 1:1 for DREX.
+Token ERC20 com mecanismo de rebase representando direitos de resgate dos usuários sobre saldos e rendimentos das pools. Expande conforme juros são acumulados. Resgatável 1:1 por DREX.
 
 **LiquidatePool**
 
-Auxiliary contract that executes decentralized liquidations of undercollateralized positions via Uniswap when triggered. Converts a proportional part of the collateral into DREX to repurchase debt and release depositors.
+Contrato auxiliar que executa liquidações descentralizadas de posições via Uniswap quando acionado. Converte parte proporcional dos colaterais em DREX para recomprar dívida e liberar depositantes.
 
 **InterestRateModel**
 
-Determines variable interest rates of pools by consulting current Selic rate data via Chainlink oracles. Sets interest rate parameters applied in the pools.
+Determina taxas de juros variáveis das pools consultando dados de taxa Selic vigente via oráculos Chainlink. Define parâmetros de taxa de juros aplicados nas pools.
 
 ## Quick Start
-First, clone the repository and install the dependencies:
+Primeiro, clone o repositório e instale as dependências:
 ```shell
 git clone https://github.com/pollum-io/lyra-contracts
 cd lyra-contracts
 yarn install
 ```
 
-To compile the contracts:
+Para compilar os contratos:
 ```shell
 npx hardhat compile
 ```
-This will generate the compiled files in the artifacts folder.
+Isso irá gerar os arquivos compilados na pasta artifacts.
 
-To run the tests:
+Para executar os testes:
 ```shell
 npx hardhat test
 ```
-The tests will run a local instance of the blockchain and test the contracts on this temporary test network.
+Os testes executarão uma instância local da blockchain e testarão os contratos nessa rede de teste temporária.
