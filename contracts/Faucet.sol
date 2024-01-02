@@ -33,14 +33,14 @@ contract DualTokenFaucet {
 	/// @notice Claim TSELIC29 and DREX tokens
 	/// @dev Requires the time since last claim to be greater than the claim wait time
 	function claimTokens() public {
-		require(block.timestamp - lastClaimTime[msg.sender] >= claimWait, "Wait 1 hour");
+		require(claimWait + lastClaimTime[msg.sender] <= block.timestamp, "Wait 1 hour");
 		require(TSELIC29.balanceOf(address(this)) >= 1e17, "Not enough TSELIC29");
-		require(DREX.balanceOf(address(this)) >= 1000e18, "Not enough DREX");
+		require(DREX.balanceOf(address(this)) >= 1000e6, "Not enough DREX");
 
 		lastClaimTime[msg.sender] = block.timestamp;
 
 		TSELIC29.transfer(msg.sender, 1e17);
-		DREX.transfer(msg.sender, 1000e18);
+		DREX.transfer(msg.sender, 1000e6);
 
 		emit TokensClaimed(msg.sender);
 	}
